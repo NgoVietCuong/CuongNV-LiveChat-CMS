@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatNav from '@/components/Layout/ChatNav';
+import ChatNav from '@/components/Layout/ChatLayout/ChatNav';
 import ChatArea from '@/components/ChatArea';
 import { useEffect, useState } from 'react';
 import socket from '@/ultils/socketIO';
@@ -12,12 +12,12 @@ import { faFaceSmile } from "@fortawesome/free-regular-svg-icons";
 export default function Chats() {
   const [message, setMessage] = useState('');
   const [allMessages, setAllMessages] = useState([]);
-  console.log(allMessages)
 
   useEffect(() => {
-    socket.on('message', (data) => [
+    socket.on('message', (data) => {
+      console.log(data)
       setAllMessages((pre) => [...pre, data])
-    ])
+    })
   }, []);
 
   return (
