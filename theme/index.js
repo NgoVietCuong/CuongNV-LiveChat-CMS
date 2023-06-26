@@ -1,14 +1,10 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme } from '@chakra-ui/react'
 
 const theme = extendTheme({
-  // fonts: {
-  //   heading: "Gilroy",
-  //   body: "Gilroy",
-  // },
-  // fontWeights: {
-  //   extrabold: 800,
-  //   light: 300,
-  // }
+  fonts: {
+    body: 'Inter, system-ui, sans-serif',
+    heading: 'Inter, system-ui, sans-serif',
+  },
 });
 
 export default theme;

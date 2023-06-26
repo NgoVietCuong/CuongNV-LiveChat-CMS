@@ -20,7 +20,7 @@ export default function ChatArea({ messages, onSendMessage }) {
   }
 
   return (
-    <Stack p={4} w='auto' h='100vh' maxH='100vh' bg='gray.100' flexGrow={1} spacing={0}>
+    <Stack p={4} w='auto' h='100vh' maxH='100vh' bg='gray.50' flexGrow={1} spacing={0}>
       <Stack w='100%' h='100%' bg='white' borderRadius='md' spacing={0} boxShadow='rgba(0, 27, 71, 0.08) 0px 3px 8px'>
         <Box p={4} w='100%' h='70px' bg='whiteAlpha.900' borderRadius='xl'>
           <Stack w='100%' h='100%' direction='row' justifyContent='space-between' alignItems='center'>

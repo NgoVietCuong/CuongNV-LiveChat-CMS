@@ -1,8 +1,8 @@
 import { Box, Stack, Image, IconButton, Divider, Icon, Switch, Avatar, AvatarBadge, Tooltip } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faUser, faHome, faGear, faChartArea } from '@fortawesome/free-solid-svg-icons';
+import { faMessage, faUser, faHome, faGear, faChartArea, faAddressBook, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { UserContext } from "@/context/UserContext";
 
 const selectedNavigation = {
@@ -25,12 +25,12 @@ const normalNavigation = {
   borderRadius: 'xl',
   '&:hover': {
     bg: 'gray.300',
-    boxShadow: '0px 4px 8px rgba(61,65,67,.2)'
+    boxShadow: '0 4px 8px rgba(61,65,67,.2)'
   },
   '&:active': {
     transform: "scale(0.9)",
     transition: "transform 0.1s ease-in-out",
-    boxShadow: '0px 4px 8px rgba(61,65,67,.2)'
+    boxShadow: '0 4px 8px rgba(61,65,67,.2)'
   },
 }
 
@@ -51,8 +51,16 @@ export default function SideNav() {
     } 
   }
 
+  const hasSubNav = () => {
+    if (router.pathname.includes('/chats') || router.pathname.includes('/settings')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
-    <Box w='90px' h='100vh' bg='whiteAlpha.900' boxShadow='0px 0px 4px rgba(0, 0, 0, 0.25)'>
+    <Box w='90px' h='100vh' bg='whiteAlpha.900' boxShadow={hasSubNav() ? '0px 0px 2px rgba(0, 0, 0, 0.25)': '0 2px 6px rgba(61,65,67,.2)'} zIndex='5'>
       <Stack py={3} h='100%' direction='column' alignItems='center' justifyContent='space-between'>
         <Stack spacing={5} direction='column' alignItems='center'>
           <Box p={1} w='56px' h='56px' bg='blue.300' borderRadius='xl' boxShadow='0px 4px 8px rgba(61,65,67,.2)'>
@@ -72,15 +80,21 @@ export default function SideNav() {
               </Box>
             </Tooltip>
             
+            <Tooltip label='Contacts' placement='right'>
+              <Box>
+                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faAddressBook} boxSize='19px' />} bg='whiteAlpha.900' onClick={() => handleNavigation('/contacts')} sx={isSelected('/contacts') ? selectedNavigation: normalNavigation} />
+              </Box>
+            </Tooltip>
+
             <Tooltip label='Visitors' placement='right'>
               <Box>
                 <IconButton icon={<Icon as={FontAwesomeIcon} icon={faUser} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/visitors')} sx={isSelected('/visitors') ? selectedNavigation: normalNavigation} />
               </Box>
             </Tooltip>
             
-            <Tooltip label='Analytics' placement='right'>
+            <Tooltip label='ChatBots' placement='right'>
               <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faChartArea} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/analytics')} sx={isSelected('/analytics') ? selectedNavigation: normalNavigation} />
+                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faRobot} boxSize='20px' />} bg='whiteAlpha.900' onClick={() => handleNavigation('/chatbots')} sx={isSelected('/chatbots') ? selectedNavigation: normalNavigation} />
               </Box>
             </Tooltip>
             

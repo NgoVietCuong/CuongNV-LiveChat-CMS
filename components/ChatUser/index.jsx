@@ -1,8 +1,8 @@
 import { Avatar, AvatarBadge, Box, Heading, Stack, Text, Icon, Flex, Divider, Grid, GridItem  } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const avatarColorList = [
   'red.300',
@@ -53,7 +53,7 @@ export default function ChatUser({ user }) {
           templateAreas={`"avatar name time"
                           "avatar email time"
                           "message message message"`}
-          gridTemplateColumns={'1.3fr 4.5fr 1.5fr'}
+          gridTemplateColumns={'1.3fr 4.5fr 1.6fr'}
           gap={0}
         >
           <GridItem area={'avatar'}>
@@ -62,7 +62,7 @@ export default function ChatUser({ user }) {
             </Avatar>
           </GridItem>
           <GridItem area={'name'} alignSelf="end">
-            <Heading fontSize='14px' fontWeight='500' color='blackAlpha.900'>{name}</Heading>
+            <Heading fontSize='14px' fontWeight='500' color='#283d52'>{name}</Heading>
           </GridItem>
           <GridItem area={'email'} alignSelf="start">
             <Text fontSize='12px' color='gray.500'>{email}</Text>

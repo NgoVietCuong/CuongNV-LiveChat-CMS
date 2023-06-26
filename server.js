@@ -1,5 +1,7 @@
-const fetch = require('isomorphic-fetch');
+
+const axios = require('axios');
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 const Koa = require('koa');
 const next = require('next');
 const koaBody = require("koa-body");
@@ -18,7 +20,10 @@ const {
     API_VERSION,
     APP_PORT,
     APP_DOMAIN,
-    SERVER_URL
+    SERVER_URL,
+    JWT_SECRET_KEY,
+    JWT_EXPIRES_IN,
+    JWT_ALGORITHM
 } = process.env;
 
 Shopify.Context.initialize({
@@ -48,37 +53,87 @@ app.prepare().then(() => {
             accessMode: 'offline',
             async afterAuth(ctx) {
                 const { shop, accessToken } = ctx.state.shopify;
-                console.log(shop)
-                console.log(shop, accessToken);
-                ctx.cookies.set('shopOrigin', shop, {
-                    httpOnly: false,
-                    secure: true, 
-                    sameSite: 'none' 
-                });
-                ctx.cookies.set('accessToken', accessToken, {
-                    httpOnly: false, 
-                    secure: true, 
-                    sameSite: 'none' 
-                });
+                const jwtSecretKey = JWT_SECRET_KEY;
+                const jwtPayload = {
+                    domain: shop,
+                    accessToken: accessToken,
+                }
+                const jwtOptions = {
+                    algorithm: JWT_ALGORITHM,
+                    expiresIn: JWT_EXPIRES_IN
+                }
 
-                if (shop) {
-                    try {
-                        const testRes = await fetch(`${SERVER_URL}/update`, {
-                            method: 'POST',
+                const token = jwt.sign(jwtPayload, jwtSecretKey, jwtOptions);
+
+                ctx.cookies.set('shop', shop, { httpOnly: false, secure: true, sameSite: 'none' });
+                ctx.cookies.set('accessToken', accessToken, { httpOnly: false, secure: true, sameSite: 'none' });
+                ctx.cookies.set('nvcJWT', token, { httpOnly: false, secure: true, sameSite: 'none' });
+                
+                let shopAuthentication = false;
+
+                try {
+                    const shopRes = await axios({
+                        url: `${SERVER_URL}/shops`,
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    const shopData = shopRes.data;
+                    
+                    if (shopData && shopData.statusCode === 200) {
+                        const updateRes = await axios({
+                            url: `${SERVER_URL}/shops`,
+                            method: 'put', 
                             headers: {
-                                'Content-type': 'application/json'
-                            },
-                            body: JSON.stringify({domain: shop, accessToken: accessToken })
-                        })
-                        const testJson = await testRes.json();
-                        console.log(testJson);
-                    } catch (e) {
-                        console.log('error frontend', e);
-                    }
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                        const updateData = updateRes.data;
 
-                    ctx.redirect("/chats");
-                } else {
-                    console.log("Could not authenticate app");
+                        if (updateData && updateData.statusCode === 200) {
+                            shopAuthentication = true;
+                            await axios({
+                                url: `${SERVER_URL}/script-tags`,
+                                method: 'put',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
+                        }
+                    } else {
+                        const createRes = await axios({
+                            url: `${SERVER_URL}/shops`, 
+                            method: 'post',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                        const createData = createRes.data;
+                        
+                        if (createData && createData.statusCode === 201) {
+                            shopAuthentication = true;
+                            await axios({
+                                url: `${SERVER_URL}/script-tags`,
+                                method: 'post',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("ERROR", "[server.js] shopifyAuth", e);
+                }
+
+                if (shopAuthentication) {
+                    console.log('Shop authenticated successfully');
+                    ctx.redirect("/");
                 }
             }
         })
