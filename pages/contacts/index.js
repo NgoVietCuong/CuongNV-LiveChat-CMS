@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
 import { Avatar, Badge, Box, Button, ButtonGroup, Heading, Text, Stack, Icon, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Card, CardBody } from '@chakra-ui/react';
@@ -6,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faMessage, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import ContactListSkeleton from '@/components/Skeleton/ContactListSkeleton';
 import EmptyContactList from '@/components/EmptyState/EmptyContactList';
+import fetchData from '@/ultils/swr';
 
 const profileButtonStyle = {
   h: '36px',
@@ -54,30 +56,23 @@ const deleteButtonStyle = {
 
 export default function Contacts({jwt}) {
   const router = useRouter();
-  const [visistors, setVisitors] = useState([]);
-  const [isFetching, setIsFetching] = useState(true);
+  const [contacts, setContacts] = useState([]);
 
-  const getVisitors = useCallback(async () => {
-    setIsFetching(true);
-    const visitorRes = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/visitors`,
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwt}`
-      }
-    });
-
-    const visitorData = visitorRes.data;
-    if (visitorData && visitorData.statusCode === 200) {
-      setVisitors(visitorData.payload);
+  const { data, isLoading } = useSWR(
+    [`${process.env.NEXT_PUBLIC_SERVER_URL}/visitors/contacts`, jwt],
+    fetchData,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: false,
     }
-    setIsFetching(false);
-  }, [jwt]);
+  );
 
   useEffect(() => {
-    getVisitors();
-  }, [getVisitors]);
+    if (data && (data.statusCode === 200 || data.statusCode === 404)) {
+      setContacts(data.payload);
+    }
+  }, [jwt, data]);
 
   return (
     <Box w='auto' h='100%' bg='gray.50' flexGrow={1}>
@@ -85,9 +80,9 @@ export default function Contacts({jwt}) {
         <Heading color='#283d52' fontSize='27px' fontWeight='500'>Contacts</Heading>
         <Card boxShadow='rgba(0, 27, 71, 0.08) 0px 3px 8px'>
           <CardBody>
-            {isFetching && <ContactListSkeleton />}
-            {(!isFetching && !visistors.length) && <EmptyContactList />}
-            {(!isFetching && visistors.length > 0) && (
+            {isLoading && <ContactListSkeleton />}
+            {(!isLoading && !contacts.length) && <EmptyContactList />}
+            {(!isLoading && contacts.length > 0) && (
               <TableContainer w='100%'>
                 <Table variant='simple' size='md'>
                   <Thead bg='gray.50'>
@@ -100,20 +95,20 @@ export default function Contacts({jwt}) {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {visistors.map((visitor) =>(
+                    {contacts.map((contact) =>(
                       <Tr cursor='pointer'>
                         <Td>
                           <Stack direction='row' alignItems='center'>
                             <Avatar size='sm' name='Ngo Cuong' bg='blue.300' color='white'/>
-                            <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name}</Heading>
+                            <Heading fontSize='14px' fontWeight='500' color='#283d52'>{contact.name}</Heading>
                           </Stack>                    
                         </Td>
-                        <Td><Text fontSize='14px'>{visitor.email}</Text></Td>
+                        <Td><Text fontSize='14px'>{contact.email}</Text></Td>
                         <Td><Badge bg='blue.300' variant='solid' colorScheme='teal' textTransform='none'>Online</Badge></Td>
-                        <Td><Text fontSize='14px'>{`${visitor.location}, ${visitor.country}`}</Text></Td>
+                        <Td><Text fontSize='14px'>{`${contact.location}, ${contact.country}`}</Text></Td>
                         <Td display='flex' justifyContent='center'>
                           <ButtonGroup>
-                            <Button sx={profileButtonStyle} size='sm' colorScheme='teal' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faAddressCard} boxSize={5} />} onClick={() => {router.push(`/contacts/${visitor._id}`)}}>Profile</Button>
+                            <Button sx={profileButtonStyle} size='sm' colorScheme='teal' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faAddressCard} boxSize={5} />} onClick={() => {router.push(`/contacts/${contact._id}`)}}>Profile</Button>
                             <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />} onClick={() => {console.log(2)}}>Chat</Button>
                             <Button sx={deleteButtonStyle} size='sm' colorScheme='red' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faTrashCan} boxSize={4} />} onClick={() => {console.log(3)}}>Delete</Button>
                           </ButtonGroup>

@@ -2,7 +2,7 @@ import { Box, Stack, Image, IconButton, Divider, Icon, Switch, Avatar, AvatarBad
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMessage, faUser, faHome, faGear, faChartArea, faAddressBook, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { UserContext } from "@/context/UserContext";
 
 const selectedNavigation = {
@@ -86,7 +86,7 @@ export default function SideNav() {
               </Box>
             </Tooltip>
 
-            <Tooltip label='Visitors' placement='right'>
+            <Tooltip label='Online Visitors' placement='right'>
               <Box>
                 <IconButton icon={<Icon as={FontAwesomeIcon} icon={faUser} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/visitors')} sx={isSelected('/visitors') ? selectedNavigation: normalNavigation} />
               </Box>

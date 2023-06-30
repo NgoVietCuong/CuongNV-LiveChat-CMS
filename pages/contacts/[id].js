@@ -22,13 +22,13 @@ const chatButtonStyle = {
 }
 
 export default function ContactDetail({ jwt, id }) {
-  const [visitor, setVisitor] = useState(null);
+  const [contact, setContact] = useState(null);
   const [isFetching, setIsFetching] = useState(true);
 
 
-  const fetchVisitor = useCallback(async () => {
+  const fetchContact = useCallback(async () => {
     setIsFetching(true);
-    const visitorRes = await axios({
+    const contactRes = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/visitors/${id}`,
       method: 'get',
       headers: {
@@ -37,16 +37,16 @@ export default function ContactDetail({ jwt, id }) {
       }
     });
 
-    const visitorData = visitorRes.data;
-    // if (visitorData && visitorData.statusCode === 200) {
-    //   setVisitor(visitorData.payload);
-    // }
+    const contactData = contactRes.data;
+    if (contactData && contactData.statusCode === 200) {
+      setContact(contactData.payload);
+    }
     setIsFetching(false);
   }, [jwt, id]);
 
   useEffect(() => {
-    fetchVisitor();
-  }, [fetchVisitor]);
+    fetchContact();
+  }, [fetchContact]);
 
   return (
     <>
@@ -60,7 +60,7 @@ export default function ContactDetail({ jwt, id }) {
                 <Box pt={8} pb={6}>
                   <Stack alignItems='center' spacing={5}>
                     <Avatar bg='blue.300' name='Cuong' w='55px' h='55px' />
-                    <Heading color='#283d52' fontSize='24px' fontWeight='500' marginBottom='1!important'>Ngo Cuong</Heading>
+                    <Heading color='#283d52' fontSize='24px' fontWeight='500' marginBottom='1!important'>{contact.name}</Heading>
                     <Button sx={chatButtonStyle} size='sm' color='#283d52' variant='solid' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
                   </Stack>
                 </Box>
@@ -70,15 +70,15 @@ export default function ContactDetail({ jwt, id }) {
                   <Stack px={5} spacing={4} py={6}>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>Email</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>cuongcuu59@gmail.com</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.email}</Text>
                     </Flex>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>City/State</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>Hanoi</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.location}</Text>
                     </Flex>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>Country</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>VN</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.country}</Text>
                     </Flex>
                   </Stack>
                 </Box>
@@ -88,19 +88,19 @@ export default function ContactDetail({ jwt, id }) {
                   <Stack px={5} spacing={4} py={6}>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>Device</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>Desktop</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.device}</Text>
                     </Flex>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>OS</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>Windows</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.os}</Text>
                     </Flex>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>Browser</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>Chrome</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.browser}</Text>
                     </Flex>
                     <Flex justifyContent='space-between'>
                       <Text fontSize='13px' color='rgb(140, 145, 145)' fontWeight='400'>IP Address</Text>
-                      <Text fontSize='13px' color='#283d52' fontWeight='500'>172.104.43.20</Text>
+                      <Text fontSize='13px' color='#283d52' fontWeight='500'>{contact.ips}</Text>
                     </Flex>
                   </Stack>
                   <Divider w='86%' m='auto' borderColor='gray.300' />

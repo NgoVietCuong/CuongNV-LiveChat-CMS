@@ -17,7 +17,7 @@ const chatButtonStyle = {
   },
 }
 
-export default function VisitorList() {
+export default function VisitorList({ visitors }) {
   return (
     <>
       <TableContainer w='100%'>
@@ -25,6 +25,7 @@ export default function VisitorList() {
             <Thead bg='gray.50'>
               <Tr>
                 <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Name</Text></Th>
+                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Type</Text></Th>
                 <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Location</Text></Th>
                 <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Device</Text></Th>
                 <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>OS</Text></Th>
@@ -33,91 +34,26 @@ export default function VisitorList() {
               </Tr>
             </Thead>
             <Tbody>
-              <Tr cursor='pointer'>
-                <Td>
-                  <Stack direction='row' alignItems='center'>
-                    <Avatar size='sm' name='Ngo Cuong' bg='blue.300' color='white'>
-                      <AvatarBadge boxSize='11px' bg='green.500' />
-                    </Avatar>
-                    <Heading fontSize='14px' fontWeight='500' color='#283d52'>Ngo Cuong</Heading>
-                  </Stack>                    
-                </Td>
-                <Td><Text fontSize='14px'>Hanoi, VN</Text></Td>
-                <Td><Text fontSize='14px'>Desktop</Text></Td>
-                <Td><Text fontSize='14px'>Windows</Text></Td>
-                <Td><Text fontSize='14px'>Chrome</Text></Td>
-                <Td display='flex' justifyContent='center'>
-                    <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Stack direction='row' alignItems='center'>
-                    <Avatar size='sm' name='Ngo Cuong' bg='purple.300' color='white'>
-                      <AvatarBadge boxSize='11px' bg='green.500' />
-                    </Avatar>
-                    <Heading fontSize='14px' fontWeight='500'>Ngo Cuong</Heading>
-                  </Stack>                    
-                </Td>
-                <Td><Text fontSize='14px'>Hanoi, VN</Text></Td>
-                <Td><Text fontSize='14px'>Desktop</Text></Td>
-                <Td><Text fontSize='14px'>Windows</Text></Td>
-                <Td><Text fontSize='14px'>Chrome</Text></Td>
-                <Td display='flex' justifyContent='center'>
-                    <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Stack direction='row' alignItems='center'>
-                    <Avatar size='sm' name='Ngo Cuong' bg='pink.300' color='white'>
-                      <AvatarBadge boxSize='11px' bg='green.500' />
-                    </Avatar>
-                    <Heading fontSize='14px' fontWeight='500'>Ngo Cuong</Heading>
-                  </Stack>                    
-                </Td>
-                <Td><Text fontSize='14px'>Hanoi, VN</Text></Td>
-                <Td><Text fontSize='14px'>Desktop</Text></Td>
-                <Td><Text fontSize='14px'>Windows</Text></Td>
-                <Td><Text fontSize='14px'>Chrome</Text></Td>
-                <Td display='flex' justifyContent='center'>
-                    <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Stack direction='row' alignItems='center'>
-                    <Avatar size='sm' name='Ngo Cuong' bg='pink.300' color='white'>
-                      <AvatarBadge boxSize='11px' bg='green.500' />
-                    </Avatar>
-                    <Heading fontSize='14px' fontWeight='500'>Ngo Cuong</Heading>
-                  </Stack>                    
-                </Td>
-                <Td><Text fontSize='14px'>Hanoi, VN</Text></Td>
-                <Td><Text fontSize='14px'>Desktop</Text></Td>
-                <Td><Text fontSize='14px'>Windows</Text></Td>
-                <Td><Text fontSize='14px'>Chrome</Text></Td>
-                <Td display='flex' justifyContent='center'>
-                    <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Stack direction='row' alignItems='center'>
-                    <Avatar size='sm' name='Ngo Cuong' bg='pink.300' color='white'>
-                      <AvatarBadge boxSize='11px' bg='green.500' />
-                    </Avatar>
-                    <Heading fontSize='14px' fontWeight='500'>Ngo Cuong</Heading>
-                  </Stack>                    
-                </Td>
-                <Td><Text fontSize='14px'>Hanoi, VN</Text></Td>
-                <Td><Text fontSize='14px'>Desktop</Text></Td>
-                <Td><Text fontSize='14px'>Windows</Text></Td>
-                <Td><Text fontSize='14px'>Chrome</Text></Td>
-                <Td display='flex' justifyContent='center'>
-                    <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
-                </Td>
-              </Tr>
+              {visitors.map((visitor) => (
+                <Tr cursor='pointer'>
+                  <Td>
+                    <Stack direction='row' alignItems='center'>
+                      <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg='blue.300' color='white'>
+                        <AvatarBadge boxSize='11px' bg='green.500' />
+                      </Avatar>
+                      <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name ? visitor.name : visitor.key.split('-')[0]}</Heading>
+                    </Stack>                    
+                  </Td>
+                  <Td><Text fontSize='14px'>{`${visitor.type} visitor`}</Text></Td>
+                  <Td><Text fontSize='14px'>{`${visitor.location}, ${visitor.country}`}</Text></Td>
+                  <Td><Text fontSize='14px'>{visitor.device}</Text></Td>
+                  <Td><Text fontSize='14px'>{visitor.os}</Text></Td>
+                  <Td><Text fontSize='14px'>{visitor.browser}</Text></Td>
+                  <Td display='flex' justifyContent='center'>
+                      <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
+                  </Td>
+                </Tr>
+              ))}
             </Tbody>
           </Table>
       </TableContainer>
