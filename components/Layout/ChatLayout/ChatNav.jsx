@@ -1,12 +1,34 @@
+import useSWR from 'swr';
+import { useEffect, useState } from "react";
 import { Box, Heading, Icon, Input, InputGroup, InputLeftElement, Stack, Text} from "@chakra-ui/react";
 import ChatUser from "../../ChatUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import fetchData from '@/ultils/swr';
 
-export default function ChatNav({ users }) {
+export default function ChatNav({ jwt }) {
+  const [chats, setChats] = useState([]);
+  console.log('chat', chats)
+
+  const { data, isLoading } = useSWR(
+    [`${process.env.NEXT_PUBLIC_SERVER_URL}/chats`, jwt],
+    fetchData,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: false,
+    }
+  );
+
+  useEffect(() => {
+    if (data && (data.statusCode === 200 || data.statusCode === 404)) {
+      setChats(data.payload);
+    }
+  }, [jwt, data]);
+
   return (
     <Box w='300px' h='100vh' bg='whiteAlpha.900' boxShadow='0 2px 6px rgba(61,65,67,.2)' zIndex='4'>
-      <Stack spacing={0} h='100%' maxH='100vh' justifyContent='flex-start'>
+      <Stack w='100%' minW='300px' h='100%' maxH='100vh' spacing={0} justifyContent='flex-start'>
         <Stack px={5} pt={5} pb={2} spacing={6}>
           <Heading color='#283d52' fontSize='27px' fontWeight='500'>Chats</Heading>
           <InputGroup marginEnd={3}>
@@ -30,9 +52,9 @@ export default function ChatNav({ users }) {
             scrollbarColor: 'transparent transparent', // For Firefox
             WebkitOverflowScrolling: 'touch',
           }}>
-          {users.map(user => (
+          {chats.map(chat => (
             <>
-              <ChatUser user={user} />
+              <ChatUser chat={chat} />
             </>
           ))}     
         </Stack>

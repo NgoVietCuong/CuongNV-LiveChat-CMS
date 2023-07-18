@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMessage } from '@fortawesome/free-regular-svg-icons';
 import ContactDetailSkeleton from '@/components/Skeleton/ContactDetailSkeleton';
 
-
 const chatButtonStyle = {
   h: '36px',
   '&:hover': {
@@ -24,7 +23,6 @@ const chatButtonStyle = {
 export default function ContactDetail({ jwt, id }) {
   const [contact, setContact] = useState(null);
   const [isFetching, setIsFetching] = useState(true);
-
 
   const fetchContact = useCallback(async () => {
     setIsFetching(true);
@@ -59,7 +57,7 @@ export default function ContactDetail({ jwt, id }) {
               <Stack w='100%'>
                 <Box pt={8} pb={6}>
                   <Stack alignItems='center' spacing={5}>
-                    <Avatar bg='blue.300' name='Cuong' w='55px' h='55px' />
+                    <Avatar bg={contact.avatar} name={contact.name} w='55px' h='55px' />
                     <Heading color='#283d52' fontSize='24px' fontWeight='500' marginBottom='1!important'>{contact.name}</Heading>
                     <Button sx={chatButtonStyle} size='sm' color='#283d52' variant='solid' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
                   </Stack>

@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Heading, Card, CardBody, Stack } from "@chakra-ui/react";
 import VisitorList from "@/components/VisitorList";
 import EmptyVisitorList from "@/components/EmptyState/EmptyVisitorList";

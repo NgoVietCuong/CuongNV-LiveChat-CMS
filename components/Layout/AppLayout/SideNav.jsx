@@ -61,13 +61,13 @@ export default function SideNav() {
 
   return (
     <Box w='90px' h='100vh' bg='whiteAlpha.900' boxShadow={hasSubNav() ? '0px 0px 2px rgba(0, 0, 0, 0.25)': '0 2px 6px rgba(61,65,67,.2)'} zIndex='5'>
-      <Stack py={3} h='100%' direction='column' alignItems='center' justifyContent='space-between'>
-        <Stack spacing={5} direction='column' alignItems='center'>
+      <Stack w='100%' minWidth='90px' h='100%' py={3} direction='column' alignItems='center' justifyContent='space-between'>
+        <Stack w='100%' spacing={5} direction='column' alignItems='center'>
           <Box p={1} w='56px' h='56px' bg='blue.300' borderRadius='xl' boxShadow='0px 4px 8px rgba(61,65,67,.2)'>
             <Image src={'/logo.ico'} borderRadius='xl' />
           </Box>
 
-          <Stack w='max-content' spacing={5} direction='column' alignItems='center'>
+          <Stack w='fit-content' spacing={5} direction='column' alignItems='center'>
             <Tooltip label='Dashboard' placement='right'>
               <Box>
                 <IconButton icon={<Icon as={FontAwesomeIcon} icon={faHome} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/')} sx={isSelected('/') ? selectedNavigation: normalNavigation} />

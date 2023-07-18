@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Button, Heading, Text, Stack, Icon, Table, Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, Button, Heading, Stack, Icon, Table, Thead, Tbody, Tr, Th, Td, TableContainer,Text } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage } from "@fortawesome/free-regular-svg-icons";
 
@@ -38,7 +38,7 @@ export default function VisitorList({ visitors }) {
                 <Tr cursor='pointer'>
                   <Td>
                     <Stack direction='row' alignItems='center'>
-                      <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg='blue.300' color='white'>
+                      <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg={visitor.avatar} color='white'>
                         <AvatarBadge boxSize='11px' bg='green.500' />
                       </Avatar>
                       <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name ? visitor.name : visitor.key.split('-')[0]}</Heading>

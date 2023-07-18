@@ -33,9 +33,20 @@ export default function ChatDashboard() {
   )
 }
 
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const jwt = req.cookies['nvcJWT'];
+
+  return {
+    props: {
+      jwt
+    }
+  };
+}
+
 ChatDashboard.getLayout = function(page) {
   return (
-    <ChatLayout>
+    <ChatLayout jwt={page.props.jwt}>
       {page}
     </ChatLayout>
   )
