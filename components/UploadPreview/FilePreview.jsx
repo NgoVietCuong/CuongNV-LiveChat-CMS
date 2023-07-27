@@ -1,7 +1,7 @@
 import { Box, IconButton, Icon, Stack, Text } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faFile, faFileWord, faFileExcel } from "@fortawesome/free-solid-svg-icons";
-import checkFileType from "@/ultils/checkFileType";
+import checkFileType from "@/utils/checkFileType";
 
 export default function FilePreview({ file, index, handleCancel }) {
   const { original_filename, url } = file;

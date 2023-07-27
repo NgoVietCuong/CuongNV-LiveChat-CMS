@@ -1,7 +1,7 @@
 import { Box, Flex, Icon, Link, Stack, Text } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFileWord, faFileExcel } from "@fortawesome/free-solid-svg-icons";
-import checkFileType from "@/ultils/checkFileType";
+import checkFileType from "@/utils/checkFileType";
 
 export default function FileMessage({ message }) {
   const { sender, filename, url } = message;

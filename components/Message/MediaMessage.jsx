@@ -1,5 +1,5 @@
 import { Box, Image, Flex, Text, Stack } from "@chakra-ui/react";
-import checkFileType from "@/ultils/checkFileType";
+import checkFileType from "@/utils/checkFileType";
 import ReactPlayer from "react-player";
 import AudioPlayer from 'react-audio-player';
 

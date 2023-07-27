@@ -1,4 +1,6 @@
 import axios from "axios";
+import * as linkify from 'linkifyjs';
+import linkifyHtml from 'linkify-html';
 import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarBadge, Box, Button, Flex, Heading, Icon, IconButton, Input, Stack, Spinner, Text, Textarea  } from "@chakra-ui/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,8 +12,6 @@ import LinkMessage from "../Message/LinkMessage";
 import ImagePreview from "../UploadPreview/ImagePreview";
 import FilePreview from "../UploadPreview/FilePreview";
 import MediaPreview from "../UploadPreview/MediaPreview";
-import * as linkify from 'linkifyjs';
-import linkifyHtml from 'linkify-html';
 
 export default function ChatArea({ id, domain, messages, onSendMessage, visitor, shop }) {
   const [inputValue, setInputValue] = useState('');
@@ -59,7 +59,6 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
 
     try {
       const responses = await Promise.all(uploadPromises);
-      console.log(responses)
       const uploadedData = responses.filter(response => response);
       setSelectedFiles([...selectedFiles, ...uploadedData]);
     } catch(e) {
@@ -82,7 +81,6 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
   }
 
   const handleSendMessage = () => {
-    console.log(inputValue);
     let data = [];
     if (inputValue.trim() !== '') {
       const links = linkify.find(inputValue);

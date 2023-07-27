@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Box, Heading, Card, CardBody, Stack } from "@chakra-ui/react";
 import VisitorList from "@/components/VisitorList";
 import EmptyVisitorList from "@/components/EmptyState/EmptyVisitorList";
-import fetchData from '@/ultils/swr';
+import fetchData from '@/utils/swr';
 
 export default function Visitors({ jwt }) {
   const [visitors, setVisitors] = useState([]);
@@ -42,10 +42,12 @@ export default function Visitors({ jwt }) {
 export async function getServerSideProps(context) {
   const { req } = context;
   const jwt = req.cookies['nvcJWT'];
+  const domain = req.cookies['shop'];
 
   return {
     props: {
-      jwt
+      jwt,
+      domain
     }
   };
 }

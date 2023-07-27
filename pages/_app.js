@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import AppLayout from '@/components/Layout/AppLayout';
 import { ChakraProvider } from '@chakra-ui/react';
-import { UserProvider } from '@/context/UserContext';
+import SocketProvider, { useSocketContext } from '@/context/SocketContext';
+import ChatProvider from '@/context/ChatContext';
 import theme from '@/theme';
 import '@fontsource/inter/latin-300.css';
 import '@fontsource/inter/latin-400.css';
@@ -11,6 +12,23 @@ import '@fontsource/inter/latin-600.css';
 
 export default function App({ Component, pageProps }) {
   const renderWithLayout = Component.getLayout || ((page) => (page));
+  const domain = pageProps.domain;
+  const socket = useSocketContext();
+
+  useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+      socket.on('connect', () => {
+        socket.emit('join', { domain: domain });
+      });
+    }
+
+    return () => {
+      if (socket.connected) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
 
   return (
     <React.Fragment>
@@ -21,11 +39,13 @@ export default function App({ Component, pageProps }) {
         <link rel='icon' href='/chat_icon.png' />
       </Head>
       <ChakraProvider theme={theme}>
-        <UserProvider>
-          <AppLayout>
-            {renderWithLayout(<Component {...pageProps} />)}
-          </AppLayout>
-        </UserProvider>
+        <SocketProvider>
+          <ChatProvider>
+            <AppLayout>
+              {renderWithLayout(<Component {...pageProps} />)}
+            </AppLayout>
+          </ChatProvider>
+        </SocketProvider>
       </ChakraProvider>
     </React.Fragment>
   )

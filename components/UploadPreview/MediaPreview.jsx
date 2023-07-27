@@ -1,7 +1,7 @@
 import { Box, IconButton, Icon, Text } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faMusic, faVideo } from "@fortawesome/free-solid-svg-icons";
-import checkFileType from "@/ultils/checkFileType";
+import checkFileType from "@/utils/checkFileType";
 
 export default function MediaPreview({ file, index, handleCancel }) {
   return (

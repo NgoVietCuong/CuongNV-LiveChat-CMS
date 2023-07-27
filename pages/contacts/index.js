@@ -20,10 +20,12 @@ export default function Contacts({jwt}) {
 export async function getServerSideProps(context) {
   const { req } = context;
   const jwt = req.cookies['nvcJWT'];
+  const domain = req.cookies['shop'];
 
   return {
     props: {
-      jwt
+      jwt,
+      domain
     }
   };
 }

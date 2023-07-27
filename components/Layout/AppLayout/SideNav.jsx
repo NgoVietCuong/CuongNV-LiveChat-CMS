@@ -1,9 +1,7 @@
 import { Box, Stack, Image, IconButton, Divider, Icon, Switch, Avatar, AvatarBadge, Tooltip } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faUser, faHome, faGear, faChartArea, faAddressBook, faRobot } from '@fortawesome/free-solid-svg-icons';
+import { faMessage, faUser, faHome, faGear, faAddressBook } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
-import { UserContext } from "@/context/UserContext";
 
 const selectedNavigation = {
   bg: 'blue.300',
@@ -36,7 +34,6 @@ const normalNavigation = {
 
 export default function SideNav() {
   const router = useRouter();
-  const { isDarkMode, setIsDarkMode } = useContext(UserContext);
 
   const handleNavigation = (path) => {
     router.push(path);
@@ -92,12 +89,6 @@ export default function SideNav() {
               </Box>
             </Tooltip>
             
-            <Tooltip label='ChatBots' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faRobot} boxSize='20px' />} bg='whiteAlpha.900' onClick={() => handleNavigation('/chatbots')} sx={isSelected('/chatbots') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
-            
             <Divider w='64px' borderColor='blackAlpha.300'/>
 
             <Tooltip label='Settings' placement='right'>
@@ -109,11 +100,6 @@ export default function SideNav() {
         </Stack>
 
         <Stack py={10} spacing={8} direction='column' alignItems='center'>
-          <Switch sx={{
-              "& .chakra-switch__track": {
-                bg: isDarkMode ? "blue.300" : "gray.300",
-              },
-            }} onChange={() => {setIsDarkMode(!isDarkMode)}}/>
           <Avatar name='Ngo Cuong' bg='blue.300' color='white' size='sm' boxSize='2.2rem'>
             <AvatarBadge boxSize='12px' bg='green.500' />
           </Avatar>

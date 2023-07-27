@@ -6,3 +6,16 @@ export default function Settings() {
     </Box>
   )
 }
+
+export async function getServerSideProps(context) {
+  const { req, params } = context;
+  const jwt = req.cookies.nvcJWT;
+  const domain = req.cookies['shop'];
+
+  return {
+    props: {
+      jwt,
+      domain
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import { Avatar, AvatarBadge, Box, Heading, Stack, Text, Icon, Flex, Divider, Grid, GridItem  } from "@chakra-ui/react";
 import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInbox, faCheck, faReply } from "@fortawesome/free-solid-svg-icons";
+import { faInbox, faReply } from "@fortawesome/free-solid-svg-icons";
 import Link from 'next/link';
-import timeConverter from '@/ultils/timeConveter';
+import timeConverter from '@/utils/timeConveter';
+import extractURLFromString from "@/utils/extractUrl";
 
 const selectedUser = {
   bg: 'blue.100',
@@ -26,7 +27,7 @@ const normalUser = {
 export default function ChatUser({ chat }) {
   const { read, updated_at } = chat;
   const { name, email, active, avatar } = chat.visitor;
-  const { sender, text } = chat.lastMessage;
+  const { sender, text, type } = chat.lastMessage;
 
   const router = useRouter();
 
@@ -66,7 +67,10 @@ export default function ChatUser({ chat }) {
           </GridItem>
           <GridItem area='message' mt='8px' alignSelf='center'>
             <Flex justifyContent='space-between' alignItems='flex-end'>
-              {/* <Text fontSize='12px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>{(text.length > 31) ? text.substring(0, 29) + '...' : text}</Text> */}
+              {(type === 'Text') && <Text fontSize='12px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>{(text.length > 31) ? text.substring(0, 29) + '...' : text}</Text>}
+              {(type === 'Media') && <Text fontSize='12px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>Media</Text> }
+              {(type === 'File') && <Text fontSize='12px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>File</Text> }
+              {(type === 'Link') && <Text fontSize='12px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>{(extractURLFromString(text).length > 31) ? extractURLFromString(text).substring(0, 29) + '...' : extractURLFromString(text)}</Text> }
               {(sender === 'Visitor' && !read) && <Icon me='5px' boxSize='14px' color='blue.300' as={FontAwesomeIcon} icon={faInbox} alignSelf='center' />} 
               {(sender === 'Visitor' && read) && <Icon me='5px' boxSize='14px' color='gray.300' as={FontAwesomeIcon} icon={faInbox} alignSelf='center' />}
               {(sender === 'Operator') && <Icon me='5px' boxSize='14px' color='gray.300' as={FontAwesomeIcon} icon={faReply} alignSelf='center' />}

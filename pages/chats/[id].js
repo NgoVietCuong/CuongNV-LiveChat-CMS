@@ -1,20 +1,21 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useChatContext } from '@/context/ChatContext';
+import React, { useCallback, useEffect, useState  } from 'react';
+import socket from '@/utils/socketIO';
 import ChatLayout from '@/components/Layout/ChatLayout';
 import ChatArea from '@/components/ChatArea';
-import socket from '@/ultils/socketIO';
+import ChatAreaSkeleton from '@/components/Skeleton/ChatAreaSkeleton';
 
 export default function ChatConversation({ jwt, domain, id }) {
-  const [messages, setMessages] = useState([]);
+  const { chatMessages, setChatMessages } = useChatContext();
   const [shop, setShop] = useState(null);
   const [visitor, setVisitor] = useState(null);
+  const [messages, setMessages] = useState();
   const [isFetching, setIsFetching] = useState(true);
-
-  console.log(messages)
 
   const fetchConversation = useCallback(async () => {
     setIsFetching(true);
-    const convsersationRes = await axios({
+    const conversationRes = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
       method: 'get',
       headers: {
@@ -23,22 +24,37 @@ export default function ChatConversation({ jwt, domain, id }) {
       }
     });
 
-    const conversationData = convsersationRes.data;
+    const conversationData = conversationRes.data;
     if (conversationData && conversationData.statusCode === 200) {
-      console.log(conversationData)
       setShop(conversationData.payload.shop);
       setVisitor(conversationData.payload.visitor);
       setMessages(conversationData.payload.messages);
     }
     setIsFetching(false);
-  }, [jwt]);
+  }, [id, jwt]);
 
   useEffect(() => {
-    fetchConversation();
+    const storeChatList = JSON.parse(sessionStorage.getItem('chatList'));
+    const storeChatMessages = JSON.parse(sessionStorage.getItem('chatMessages'));
+    if (storeChatList && storeChatMessages && (id in storeChatMessages)) {
+      const chatResult = storeChatList.find(chat => chat._id === id);
+      setMessages(storeChatMessages[`${id}`]);
+      setVisitor(chatResult.visitor);
+      setShop(chatResult.shop);
+      setIsFetching(false);
+    } else {
+      fetchConversation();
+    }
   }, [fetchConversation]);
 
+  useEffect(() => {
+    const newChatMessages = {...chatMessages};
+    newChatMessages[`${id}`] = messages;
+    setChatMessages(newChatMessages);
+  }, [messages]);
+
   const handleConnect = () => {
-    socket.emit('join', visitor._id);
+    socket.emit('join', { visitorId: visitor._id, domain: domain });
   }
 
   const handleReceiveMessage = (data) => {
@@ -75,7 +91,7 @@ export default function ChatConversation({ jwt, domain, id }) {
 
   return (
     <>
-      {isFetching && <></>}
+      {isFetching && <ChatAreaSkeleton />}
       {!isFetching && <ChatArea key={id} id={id} domain={domain} messages={messages} onSendMessage={sendMessage} visitor={visitor} shop={shop} />}
     </>
   )
@@ -85,7 +101,8 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const jwt = req.cookies['nvcJWT'];
   const domain = req.cookies['shop'];
-  const id = query.id
+  const id = query.id;
+  
   return {
     props: {
       jwt,
@@ -97,7 +114,7 @@ export async function getServerSideProps(context) {
 
 ChatConversation.getLayout = function(page) {
   return (
-    <ChatLayout jwt={page.props.jwt}>
+    <ChatLayout jwt={page.props.jwt} domain={page.props.domain}>
       {page}
     </ChatLayout>
   )

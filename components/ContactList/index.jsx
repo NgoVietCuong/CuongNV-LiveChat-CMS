@@ -5,7 +5,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Avatar, AvatarBadge, Button, ButtonGroup, Heading, Icon, Stack, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer} from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faMessage, faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import fetchData from '@/ultils/swr';
+import fetchData from '@/utils/swr';
 import DeleteContactModal from '../Modal/DeleteContact';
 import ContactListSkeleton from '../Skeleton/ContactListSkeleton';
 import EmptyContactList from '../EmptyState/EmptyContactList';

@@ -1,30 +1,65 @@
-import useSWR from 'swr';
-import { useEffect, useState } from "react";
+import axios from "axios";
+import { useCallback, useEffect } from "react";
 import { Box, Heading, Icon, Input, InputGroup, InputLeftElement, Stack, Text} from "@chakra-ui/react";
 import ChatUser from "../../ChatUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import fetchData from '@/ultils/swr';
+import { useSocketContext } from '@/context/SocketContext';
+import { useChatContext } from '@/context/ChatContext';
 
 export default function ChatNav({ jwt }) {
-  const [chats, setChats] = useState([]);
-  console.log('chat', chats)
+  const socket = useSocketContext();
+  const { chatList, setChatList } = useChatContext();
 
-  const { data, isLoading } = useSWR(
-    [`${process.env.NEXT_PUBLIC_SERVER_URL}/chats`, jwt],
-    fetchData,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      shouldRetryOnError: false,
+  const fetchChatList = useCallback(async () => {
+    const chatRes = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/chats`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`
+      }
+    });
+
+    const chatData = chatRes.data;
+    if (chatData && (chatData.statusCode === 200 || chatData.statusCode === 404)) {
+      setChatList(chatData.payload);
     }
-  );
+  }, [jwt]);
 
   useEffect(() => {
-    if (data && (data.statusCode === 200 || data.statusCode === 404)) {
-      setChats(data.payload);
+    const storeChatList = JSON.parse(sessionStorage.getItem('chatList'));
+    if (storeChatList) {
+      setChatList(storeChatList);
+    } else {
+      fetchChatList();
     }
-  }, [jwt, data]);
+  }, [fetchChatList]);
+
+  const updateChatList = useCallback((data) => {
+    // console.log(data)
+    let newChatList = [...chatList];
+    const chatId = data._id;
+    const chat = newChatList.find(chat => chat._id === chatId);
+    if (chat) {
+      console.log('1')
+      const chatIndex = newChatList.indexOf(chat);
+      newChatList.splice(chatIndex, 1);
+      console.log(newChatList)
+      setChatList([data, ...newChatList]);
+    } else {
+      console.log('2')
+      setChatList([data, ...newChatList]);
+    }
+  }, [chatList]);
+
+  useEffect(() => {
+    socket.on('updateChatList', updateChatList);
+
+    return () => {
+      socket.off('updateChatList', updateChatList)
+    }
+  }, [updateChatList]);
 
   return (
     <Box w='300px' h='100vh' bg='whiteAlpha.900' boxShadow='0 2px 6px rgba(61,65,67,.2)' zIndex='4'>
@@ -52,7 +87,7 @@ export default function ChatNav({ jwt }) {
             scrollbarColor: 'transparent transparent', // For Firefox
             WebkitOverflowScrolling: 'touch',
           }}>
-          {chats.map(chat => (
+          {chatList.map(chat => (
             <>
               <ChatUser chat={chat} />
             </>

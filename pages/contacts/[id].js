@@ -57,7 +57,7 @@ export default function ContactDetail({ jwt, id }) {
               <Stack w='100%'>
                 <Box pt={8} pb={6}>
                   <Stack alignItems='center' spacing={5}>
-                    <Avatar bg={contact.avatar} name={contact.name} w='55px' h='55px' />
+                    <Avatar bg={contact.avatar} name={contact.name} w='55px' h='55px' color='white' />
                     <Heading color='#283d52' fontSize='24px' fontWeight='500' marginBottom='1!important'>{contact.name}</Heading>
                     <Button sx={chatButtonStyle} size='sm' color='#283d52' variant='solid' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
                   </Stack>
@@ -120,10 +120,13 @@ export default function ContactDetail({ jwt, id }) {
 export async function getServerSideProps(context) {
   const { req, params } = context;
   const jwt = req.cookies.nvcJWT;
+  const domain = req.cookies['shop'];
   const id = params.id;
+
   return {
     props: {
       jwt,
+      domain,
       id
     }
   }
