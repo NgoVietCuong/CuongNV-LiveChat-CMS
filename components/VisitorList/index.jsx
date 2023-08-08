@@ -6,6 +6,7 @@ import { useDisclosure } from '@chakra-ui/react'
 import { Chat } from "@mui/icons-material";
 import { useAppContext } from '@/context/AppContext';
 import CreateChatModal from '../Modal/CreateChat';
+import EmptyVisitorList from '../EmptyState/EmptyVisitorList';
 
 const chatButtonStyle = {
   h: '36px',
@@ -22,7 +23,7 @@ const chatButtonStyle = {
   },
 }
 
-export default function VisitorList({ visitors, jwt }) {
+export default function VisitorList({ jwt }) {
   const router = useRouter();
   const cancelRef = React.useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,43 +69,46 @@ export default function VisitorList({ visitors, jwt }) {
 
   return (
     <>
-      <TableContainer w='100%'>
-        <Table variant='simple' size='md'>
-            <Thead bg='gray.50'>
-              <Tr>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Name</Text></Th>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Type</Text></Th>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Location</Text></Th>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Device</Text></Th>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>OS</Text></Th>
-                <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Browser</Text></Th>
-                <Th display='flex' justifyContent='center'><Text color='#8c9191' fontWeight='600' fontSize='sm' textTransform='none'>Actions</Text></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {visitors.map((visitor) => (
-                <Tr cursor='pointer'>
-                  <Td>
-                    <Stack direction='row' alignItems='center'>
-                      <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg={visitor.avatar} color='white'>
-                        <AvatarBadge boxSize='11px' bg='green.500' />
-                      </Avatar>
-                      <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name ? visitor.name : visitor.key.split('-')[0]}</Heading>
-                    </Stack>                    
-                  </Td>
-                  <Td><Text fontSize='14px'>{`${visitor.type} visitor`}</Text></Td>
-                  <Td><Text fontSize='14px'>{`${visitor.location}, ${visitor.country}`}</Text></Td>
-                  <Td><Text fontSize='14px'>{visitor.device}</Text></Td>
-                  <Td><Text fontSize='14px'>{visitor.os}</Text></Td>
-                  <Td><Text fontSize='14px'>{visitor.browser}</Text></Td>
-                  <Td display='flex' justifyContent='center'>
-                      <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={Chat} boxSize='18px' />} onClick={() => handleChatWithVisitor(visitor)}>Chat</Button>
-                  </Td>
+      {!onlineVistors.length && <EmptyVisitorList />}
+      {(onlineVistors.length > 0) && (
+        <TableContainer w='100%'>
+          <Table variant='simple' size='md'>
+              <Thead bg='gray.50'>
+                <Tr>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Name</Text></Th>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Type</Text></Th>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Location</Text></Th>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Device</Text></Th>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>OS</Text></Th>
+                  <Th><Text color='#8c9191' fontWeight='500' fontSize='sm' textTransform='none'>Browser</Text></Th>
+                  <Th display='flex' justifyContent='center'><Text color='#8c9191' fontWeight='600' fontSize='sm' textTransform='none'>Actions</Text></Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-      </TableContainer>
+              </Thead>
+              <Tbody>
+                {onlineVistors.map((visitor) => (
+                  <Tr cursor='pointer'>
+                    <Td>
+                      <Stack direction='row' alignItems='center'>
+                        <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg={visitor.avatar} color='white'>
+                          <AvatarBadge boxSize='11px' bg='green.500' />
+                        </Avatar>
+                        <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name}</Heading>
+                      </Stack>                    
+                    </Td>
+                    <Td><Text fontSize='14px'>{`${visitor.type} visitor`}</Text></Td>
+                    <Td><Text fontSize='14px'>{`${visitor.location}, ${visitor.country}`}</Text></Td>
+                    <Td><Text fontSize='14px'>{visitor.device}</Text></Td>
+                    <Td><Text fontSize='14px'>{visitor.os}</Text></Td>
+                    <Td><Text fontSize='14px'>{visitor.browser}</Text></Td>
+                    <Td display='flex' justifyContent='center'>
+                        <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={Chat} boxSize='18px' />} onClick={() => handleChatWithVisitor(visitor)}>Chat</Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+        </TableContainer>
+      )}
       <CreateChatModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef} createChat={handleCreateChat} isCreating={isCreating} />
     </>
   )
