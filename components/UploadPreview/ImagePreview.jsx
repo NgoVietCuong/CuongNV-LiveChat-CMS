@@ -6,6 +6,7 @@ export default function ImagePreview({ file, index, handleCancel }) {
   return (
     <Box
       mr='15px'
+      mb='5px'
       position='relative' 
       minWidth='56px' 
       width='56px' 

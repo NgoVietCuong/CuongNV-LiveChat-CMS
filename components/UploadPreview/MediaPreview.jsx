@@ -9,6 +9,7 @@ export default function MediaPreview({ file, index, handleCancel }) {
       w='200px'
       h='56px'
       mr='15px'
+      mb='5px'
       minWidth='120px'
       borderRadius='5px' 
       color='rgb(8, 15, 26)'

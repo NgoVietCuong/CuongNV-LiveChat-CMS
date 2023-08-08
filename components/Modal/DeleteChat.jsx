@@ -6,11 +6,10 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogCloseButton,
-  Text,
   Button
 } from '@chakra-ui/react';
 
-export default function DeleteContactModal({ isOpen, onClose, cancelRef, deleteContact, isDeleting }) {
+export default function DeleteChatModal({ isOpen, onClose, cancelRef, deleteChat, isDeleting }) {
   return (
     <AlertDialog
       motionPreset='slideInBottom'
@@ -22,17 +21,16 @@ export default function DeleteContactModal({ isOpen, onClose, cancelRef, deleteC
       <AlertDialogOverlay />
 
       <AlertDialogContent>
-        <AlertDialogHeader>Delete Contact?</AlertDialogHeader>
+        <AlertDialogHeader>Delete Chat?</AlertDialogHeader>
         <AlertDialogCloseButton />
         <AlertDialogBody>
-          <Text>The chat related to this contact will be deleted.</Text>
-          Are you sure to delete this contact? You won't be able to undo it.
+          Are you sure to delete this chat? You won't be able to undo it.
         </AlertDialogBody>
         <AlertDialogFooter>
           <Button ref={cancelRef} onClick={onClose}>
             Cancel
           </Button>
-          <Button isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteContact}>
+          <Button isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteChat}>
             Delete
           </Button>
         </AlertDialogFooter>

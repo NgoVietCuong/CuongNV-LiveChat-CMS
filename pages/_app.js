@@ -3,8 +3,9 @@ import Head from 'next/head';
 import AppLayout from '@/components/Layout/AppLayout';
 import { ChakraProvider } from '@chakra-ui/react';
 import SocketProvider, { useSocketContext } from '@/context/SocketContext';
-import ChatProvider from '@/context/ChatContext';
+import AppProvider from '@/context/AppContext';
 import theme from '@/theme';
+import { useRouter } from 'next/router';
 import '@fontsource/inter/latin-300.css';
 import '@fontsource/inter/latin-400.css';
 import '@fontsource/inter/latin-500.css';
@@ -12,6 +13,8 @@ import '@fontsource/inter/latin-600.css';
 
 export default function App({ Component, pageProps }) {
   const renderWithLayout = Component.getLayout || ((page) => (page));
+  const router = useRouter();
+  const isIndexPage = router.pathname === '/';
   const domain = pageProps.domain;
   const socket = useSocketContext();
 
@@ -40,11 +43,15 @@ export default function App({ Component, pageProps }) {
       </Head>
       <ChakraProvider theme={theme}>
         <SocketProvider>
-          <ChatProvider>
-            <AppLayout>
-              {renderWithLayout(<Component {...pageProps} />)}
-            </AppLayout>
-          </ChatProvider>
+          <AppProvider>
+            {isIndexPage ? (
+              <Component {...pageProps} />
+            ) : (
+              <AppLayout>
+                {renderWithLayout(<Component {...pageProps} />)}
+              </AppLayout>
+            )}
+          </AppProvider>
         </SocketProvider>
       </ChakraProvider>
     </React.Fragment>

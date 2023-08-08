@@ -5,6 +5,13 @@ const theme = extendTheme({
     body: 'Inter, system-ui, sans-serif',
     heading: 'Inter, system-ui, sans-serif',
   },
+  styles: {
+    global: {
+      "*": {
+        userSelect: "none",
+      },
+    },
+  },
 });
 
 export default theme;

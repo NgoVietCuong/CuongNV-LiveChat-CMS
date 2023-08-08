@@ -132,7 +132,7 @@ app.prepare().then(() => {
 
                 if (shopAuthentication) {
                     console.log('Shop authenticated successfully');
-                    ctx.redirect("/");
+                    ctx.redirect('/');
                 }
             }
         })

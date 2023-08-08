@@ -189,7 +189,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
                 borderRadius='lg' 
                 sx={{'::placeholder': {color: 'gray.400'}}} value={inputValue} onChange={handleInputChange} onKeyPress={handleKeyPress} 
               />
-              <Flex w='100%' p='10px 15px 0px' position='relative' alignItems='center'>
+              <Flex w='100%' p='10px 15px 0px' position='relative' alignItems='center' mt='0px!important'>
                 {selectedFiles.map((file, index) => (
                   <>
                     {file.resource_type === 'raw' && <FilePreview file={file} index={index} handleCancel={handleCancel} />}
@@ -200,10 +200,10 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
                 {isLoading && <Spinner size='md' color='blue.300' />}
               </Flex>
             </Stack>
-            <Flex px={'15px'} alignItems='center' justifyContent='flex-start'>
-              <IconButton size='sm' bg='blue.300' borderRadius='md' icon={<Icon as={FontAwesomeIcon} icon={faPaperclip} color='white'/>} isDisabled={isLoading} sx={{'&:hover': {bg: 'blue.300'}}} onClick={handleButtonClick} />
+            <Flex px={'15px'} alignItems='center' justifyContent='flex-start' mt='0px!important'>
+              <IconButton size='sm' mr='10px' variant='unstyled' borderRadius='md' icon={<Icon as={FontAwesomeIcon} icon={faPaperclip} color='black'/>} isDisabled={isLoading} sx={{'&:hover': {bg: 'blue.300'}}} onClick={handleButtonClick} />
               <Input type='file' multiple ref={fileInputRef} display='none' onChange={handleFileChange} />
-              <Button size='sm' borderRadius='md' onClick={handleSendMessage}>Send</Button>
+              <Button size='sm' borderRadius='md' colorScheme='blue' onClick={handleSendMessage}>Send</Button>
             </Flex>
           </Stack>
         </Box>

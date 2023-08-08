@@ -1,6 +1,11 @@
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import React, { useCallback, useState } from 'react';
 import { Avatar, AvatarBadge, Button, Heading, Stack, Icon, Table, Thead, Tbody, Tr, Th, Td, TableContainer,Text } from "@chakra-ui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMessage } from "@fortawesome/free-regular-svg-icons";
+import { useDisclosure } from '@chakra-ui/react'
+import { Chat } from "@mui/icons-material";
+import { useAppContext } from '@/context/AppContext';
+import CreateChatModal from '../Modal/CreateChat';
 
 const chatButtonStyle = {
   h: '36px',
@@ -17,7 +22,50 @@ const chatButtonStyle = {
   },
 }
 
-export default function VisitorList({ visitors }) {
+export default function VisitorList({ visitors, jwt }) {
+  const router = useRouter();
+  const cancelRef = React.useRef();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isCreating, setIsCreating] = useState(false);
+  const [selectedVisitor, setSelectedVisitor] = useState(null);
+  const { onlineVistors, setOnlineVisitors } = useAppContext();
+
+  const handleCreateChat = useCallback(async () => {
+    setIsCreating(true);
+    const chatRes = await axios({
+      method: 'post',
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/chats`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`
+      },
+      data: JSON.stringify({ visitor: selectedVisitor, status: 'Draft' })
+    });
+
+    const chatData = chatRes.data;
+
+    if (chatData && chatData.statusCode === 201) {
+      const newOnlineVisitors = [...onlineVistors];
+      const newVisitor = {...selectedVisitor}
+      const visitorIndex = newOnlineVisitors.indexOf(selectedVisitor);
+      newVisitor.chat = { _id: chatData.payload._id};
+      newOnlineVisitors[visitorIndex] = newVisitor;
+      setOnlineVisitors(newOnlineVisitors);
+      onClose();
+      router.push(`/chats/${chatData.payload._id}`);
+    }
+    setIsCreating(false);
+  }, [jwt, selectedVisitor, onlineVistors]);
+
+  const handleChatWithVisitor = useCallback((visitor) => {
+    if (visitor.chat) {
+      router.push(`/chats/${visitor.chat._id}`);
+    } else {
+      onOpen();
+      setSelectedVisitor(visitor);
+    }
+  }, []);
+
   return (
     <>
       <TableContainer w='100%'>
@@ -50,13 +98,14 @@ export default function VisitorList({ visitors }) {
                   <Td><Text fontSize='14px'>{visitor.os}</Text></Td>
                   <Td><Text fontSize='14px'>{visitor.browser}</Text></Td>
                   <Td display='flex' justifyContent='center'>
-                      <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={FontAwesomeIcon} icon={faMessage} boxSize={4} />}>Chat</Button>
+                      <Button sx={chatButtonStyle} size='sm' colorScheme='blue' variant='outline' leftIcon={<Icon as={Chat} boxSize='18px' />} onClick={() => handleChatWithVisitor(visitor)}>Chat</Button>
                   </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
       </TableContainer>
+      <CreateChatModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef} createChat={handleCreateChat} isCreating={isCreating} />
     </>
   )
 }

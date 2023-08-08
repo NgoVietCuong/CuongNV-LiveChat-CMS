@@ -1,8 +1,10 @@
 import React from 'react';
 import ChatLayout from '@/components/Layout/ChatLayout';
 import { Box, Card, CardBody, Heading, Skeleton, Stack, Text } from '@chakra-ui/react';
+import { useAppContext } from '@/context/AppContext';
 
 export default function ChatDashboard() {
+  const { shopName } = useAppContext();
   return (
     <Box w='auto' h='100vh' bg='gray.50' flexGrow={1}>
       <Stack h='100%' maxH='100vh' spacing={0} justifyContent='center' alignItems='center'>
@@ -25,8 +27,8 @@ export default function ChatDashboard() {
               </CardBody>
             </Card>
           </Stack>
-          <Heading mb='5px!important' color='#283d52' fontSize='20px' fontWeight='600'>Hello there, Ngô</Heading>
-          <Text w='260px' color='gray.500' fontWeight='400' textAlign='center'>Pick a customer from left menu and start your conversation</Text>
+          <Heading mb='5px!important' color='#283d52' fontSize='19px' fontWeight='600'>Hello there, {shopName}</Heading>
+          <Text w='260px' color='gray.500' fontWeight='400' textAlign='center'>Pick a customer from the left menu and start your conversation</Text>
         </Stack>
       </Stack>
     </Box>
@@ -48,7 +50,7 @@ export async function getServerSideProps(context) {
 
 ChatDashboard.getLayout = function(page) {
   return (
-    <ChatLayout jwt={page.props.jwt} domain={page.props.domain}>
+    <ChatLayout jwt={page.props.jwt}>
       {page}
     </ChatLayout>
   )

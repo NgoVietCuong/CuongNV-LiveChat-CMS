@@ -1,43 +1,117 @@
-import { Box, Stack, Image, IconButton, Divider, Icon, Switch, Avatar, AvatarBadge, Tooltip } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faUser, faHome, faGear, faAddressBook } from '@fortawesome/free-solid-svg-icons';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useCallback, useEffect } from 'react';
+import { Avatar, AvatarBadge, Box, Icon, Link, List, ListItem, Stack, Tooltip, Text } from '@chakra-ui/react';
+import { MoveToInbox, PermContactCalendar, People, Analytics } from '@mui/icons-material';
+import { useAppContext } from '@/context/AppContext';
+import { useSocketContext } from '@/context/SocketContext';
 
-const selectedNavigation = {
-  bg: 'blue.300',
-  borderRadius: 'xl',
-  color: 'white',
-  boxShadow: '0px 4px 8px rgba(61,65,67,.2)',
+const navigationStyle = {
+  color: 'gray.600',
   '&:hover': {
-    bg: 'blue.300'
-  },
-  '&:active': {
-    transform: "scale(0.9)",
-    transition: "transform 0.1s ease-in-out",
-    boxShadow: '0px 4px 8px rgba(61,65,67,.2)'
-  },
+    bg: 'gray.100',
+  }
 }
 
-const normalNavigation = {
-  color: 'gray.600',
-  borderRadius: 'xl',
-  '&:hover': {
-    bg: 'gray.300',
-    boxShadow: '0 4px 8px rgba(61,65,67,.2)'
-  },
-  '&:active': {
-    transform: "scale(0.9)",
-    transition: "transform 0.1s ease-in-out",
-    boxShadow: '0 4px 8px rgba(61,65,67,.2)'
-  },
+const notification = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minW: '13px',
+  h: '13px',
+  color: 'white',
+  borderRadius: '5px',
+  p: '0px 4px',
+  fontSize: '9px',
+  lineHeight: '12px',
+  letterSpacing: '0em',
+  position: 'absolute',
+  right: '6px',
+  bottom: '9px'
 }
 
 export default function SideNav() {
   const router = useRouter();
+  const { shopName, waitingChats, setWaitingChats, openChats, setOpenChats, closedChats, setClosedChats, onlineVistors, setOnlineVisitors } = useAppContext();
+  const socket = useSocketContext();
 
-  const handleNavigation = (path) => {
-    router.push(path);
-  }
+  const handleOnlineVisistor = useCallback((data) => {
+    setOnlineVisitors([...onlineVistors, data]);
+  }, [onlineVistors]);
+
+  const handleOfflineVisitor = useCallback((data) => {
+    const newOnlineVisitors = [...onlineVistors];
+    const visitor = newOnlineVisitors.find(visitor => visitor._id === data);
+    if (visitor) {
+      const index = newOnlineVisitors.indexOf(visitor);
+      newOnlineVisitors.splice(index, 1);
+      setOnlineVisitors(newOnlineVisitors);
+    }
+  }, [onlineVistors]);
+
+  const handleUpdateVisitor = useCallback((data) => {
+    const newOnlineVisitors = [...onlineVistors];
+    const visitor = newOnlineVisitors.find(visitor => visitor._id === data._id);
+    const index = newOnlineVisitors.indexOf(visitor);
+    newOnlineVisitors[index] = data;
+    setOnlineVisitors(newOnlineVisitors);
+  }, [onlineVistors]);
+
+  const updateChatList = useCallback((data) => {
+    if (data.status === 'Waiting') {
+      let newWaitingChats = [...waitingChats];
+      const chatId = data._id;
+      const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
+      if (waitingChat) {
+        const chatIndex = newWaitingChats.indexOf(waitingChat);
+        newWaitingChats.splice(chatIndex, 1);
+        setWaitingChats([data, ...newWaitingChats]);
+      } else {
+        setWaitingChats([data, ...newWaitingChats]);
+      }
+
+      const newClosedChats = [...closedChats];
+      const closedChat = newClosedChats.find(chat => chat._id === chatId);
+      if (closedChat) {
+        const chatIndex = newClosedChats.indexOf(closedChat);
+        newClosedChats.splice(chatIndex, 1);
+        setClosedChats(newClosedChats);
+      }
+    } else if (data.status === 'Open') {
+      let newOpenChats = [...openChats];
+      const chatId = data._id;
+      const openChat = newOpenChats.find(chat => chat._id === chatId);
+      if (openChat) {
+        const chatIndex = newOpenChats.indexOf(openChat);
+        newOpenChats.splice(chatIndex, 1);
+        setOpenChats([data, ...newOpenChats]);
+      } else {
+        setOpenChats([data, ...newOpenChats]);
+      }
+
+      const newWaitingChats = [...waitingChats];
+      const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
+      if (waitingChat) {
+        const chatIndex = newWaitingChats.indexOf(waitingChat);
+        newWaitingChats.splice(chatIndex, 1);
+        setWaitingChats(newWaitingChats); 
+      }
+    }
+  }, [waitingChats, openChats, closedChats]);
+
+  useEffect(() => {
+    socket.on('updateChatList', updateChatList);
+    socket.on('onlineVisitor', handleOnlineVisistor);
+    socket.on('offlineVisitor', handleOfflineVisitor);
+    socket.on('updateVisitor', handleUpdateVisitor);
+
+    return () => {
+      socket.off('updateChatList', updateChatList);
+      socket.off('onlineVisitor', handleOnlineVisistor);
+      socket.off('offlineVisitor', handleOfflineVisitor);
+      socket.off('updateVisitor', handleUpdateVisitor);
+    }
+  }, [updateChatList, handleOnlineVisistor, handleOfflineVisitor]);
 
   const isSelected = (path) => {
     const isRoot = path === '/';
@@ -57,50 +131,56 @@ export default function SideNav() {
   }
 
   return (
-    <Box w='90px' h='100vh' bg='whiteAlpha.900' boxShadow={hasSubNav() ? '0px 0px 2px rgba(0, 0, 0, 0.25)': '0 2px 6px rgba(61,65,67,.2)'} zIndex='5'>
-      <Stack w='100%' minWidth='90px' h='100%' py={3} direction='column' alignItems='center' justifyContent='space-between'>
+    <Box w='60px' h='100vh' bg='whiteAlpha.900' boxShadow={hasSubNav() ? '0px 0px 2px rgba(0, 0, 0, 0.25)': '0 2px 6px rgba(61,65,67,.2)'} zIndex='5'>
+      <Stack w='100%' minWidth='60px' h='100%' direction='column' alignItems='center' justifyContent='space-between'>
         <Stack w='100%' spacing={5} direction='column' alignItems='center'>
-          <Box p={1} w='56px' h='56px' bg='blue.300' borderRadius='xl' boxShadow='0px 4px 8px rgba(61,65,67,.2)'>
-            <Image src={'/logo.ico'} borderRadius='xl' />
-          </Box>
+          <List w='100%' m={0} p={0} display='flex' flexDirection='column' zIndex={10}>
+            <ListItem>
+              <Tooltip ml='-5px' py='5px' label='Inbox' placement='right' bg='white' color='blue.500' fontSize='14px'>
+                <Link w='60px' h='60px' display='block' textAlign='center' href='/chats' as={NextLink} sx={navigationStyle}>
+                  <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'>
+                    <Icon boxSize='26px' as={MoveToInbox} color={isSelected('/chats') ? 'blue.500' : 'gray.500'} />
+                    {(openChats.filter(chat => chat.read === false).length + waitingChats.length) > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length + waitingChats.length}</Text>}
+                  </Stack>
+                </Link>
+              </Tooltip>
+            </ListItem>
 
-          <Stack w='fit-content' spacing={5} direction='column' alignItems='center'>
-            <Tooltip label='Dashboard' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faHome} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/')} sx={isSelected('/') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
-            
-            <Tooltip label='Chat' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faMessage} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/chats')} sx={isSelected('/chats') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
-            
-            <Tooltip label='Contacts' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faAddressBook} boxSize='19px' />} bg='whiteAlpha.900' onClick={() => handleNavigation('/contacts')} sx={isSelected('/contacts') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
+            <ListItem>
+              <Tooltip ml='-5px' py='5px' label='Contacts' placement='right' bg='white' color='blue.500' fontSize='14px'>
+                <Link w='60px' h='60px' display='block' textAlign='center' href='/contacts' as={NextLink} sx={navigationStyle}>
+                  <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'>
+                    <Icon boxSize='26px' as={PermContactCalendar} color={isSelected('/contacts') ? 'blue.500' : 'gray.500'} />
+                  </Stack>
+                </Link>
+              </Tooltip>
+            </ListItem>
 
-            <Tooltip label='Online Visitors' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faUser} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/visitors')} sx={isSelected('/visitors') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
-            
-            <Divider w='64px' borderColor='blackAlpha.300'/>
+            <ListItem>
+              <Tooltip ml='-5px' py='5px' label='Online Visitors' placement='right' bg='white' color='blue.500' fontSize='14px'>
+                <Link w='60px' h='60px' display='block' textAlign='center' href='/visitors' as={NextLink} sx={navigationStyle}>
+                  <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'>  
+                    <Icon boxSize='26px' as={People} color={isSelected('/visitors') ? 'blue.500' : 'gray.500'} />
+                    {onlineVistors.length > 0 && <Text bg='gray.400' sx={notification}>{onlineVistors.length}</Text>}
+                  </Stack>
+                </Link>
+              </Tooltip>
+            </ListItem>
 
-            <Tooltip label='Settings' placement='right'>
-              <Box>
-                <IconButton icon={<Icon as={FontAwesomeIcon} icon={faGear} />} bg='whiteAlpha.900' onClick={() => handleNavigation('/settings')} sx={isSelected('/settings') ? selectedNavigation: normalNavigation} />
-              </Box>
-            </Tooltip>
-          </Stack>
+            <ListItem>
+              <Tooltip ml='-5px' py='5px' label='Analytics' placement='right' bg='white' color='blue.500' fontSize='14px'>
+                <Link w='60px' h='60px' display='block' textAlign='center' href='/analytics' as={NextLink} sx={navigationStyle}>
+                  <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'> 
+                    <Icon boxSize='26px' as={Analytics} color={isSelected('/analytics') ? 'blue.500' : 'gray.500'} />
+                  </Stack>
+                </Link>
+              </Tooltip>
+            </ListItem>
+          </List>
         </Stack>
 
         <Stack py={10} spacing={8} direction='column' alignItems='center'>
-          <Avatar name='Ngo Cuong' bg='blue.300' color='white' size='sm' boxSize='2.2rem'>
+          <Avatar name={shopName} bg='blue.400' color='white' size='sm' boxSize='2.1rem'>
             <AvatarBadge boxSize='12px' bg='green.500' />
           </Avatar>
         </Stack>

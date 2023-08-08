@@ -12,6 +12,7 @@ export default function FilePreview({ file, index, handleCancel }) {
       w='180px'
       h='56px'
       mr='15px'
+      mb='5px'
       borderRadius='5px' 
       color='rgb(8, 15, 26)'
       px={3} 

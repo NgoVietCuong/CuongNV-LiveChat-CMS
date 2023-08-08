@@ -1,57 +1,35 @@
-import axios from 'axios';
-import { useChatContext } from '@/context/ChatContext';
-import React, { useCallback, useEffect, useState  } from 'react';
+import useSWR from 'swr';
+import React, { useEffect, useState  } from 'react';
 import socket from '@/utils/socketIO';
+import fetchData from '@/utils/swr';
 import ChatLayout from '@/components/Layout/ChatLayout';
 import ChatArea from '@/components/ChatArea';
 import ChatAreaSkeleton from '@/components/Skeleton/ChatAreaSkeleton';
 
 export default function ChatConversation({ jwt, domain, id }) {
-  const { chatMessages, setChatMessages } = useChatContext();
   const [shop, setShop] = useState(null);
   const [visitor, setVisitor] = useState(null);
-  const [messages, setMessages] = useState();
+  const [messages, setMessages] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
 
-  const fetchConversation = useCallback(async () => {
+  const { data } = useSWR(
+    [`${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`, jwt],
+    fetchData,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false
+    }
+  );
+
+  useEffect(() => {
     setIsFetching(true);
-    const conversationRes = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwt}`
-      }
-    });
-
-    const conversationData = conversationRes.data;
-    if (conversationData && conversationData.statusCode === 200) {
-      setShop(conversationData.payload.shop);
-      setVisitor(conversationData.payload.visitor);
-      setMessages(conversationData.payload.messages);
-    }
-    setIsFetching(false);
-  }, [id, jwt]);
-
-  useEffect(() => {
-    const storeChatList = JSON.parse(sessionStorage.getItem('chatList'));
-    const storeChatMessages = JSON.parse(sessionStorage.getItem('chatMessages'));
-    if (storeChatList && storeChatMessages && (id in storeChatMessages)) {
-      const chatResult = storeChatList.find(chat => chat._id === id);
-      setMessages(storeChatMessages[`${id}`]);
-      setVisitor(chatResult.visitor);
-      setShop(chatResult.shop);
+    if (data && (data.statusCode === 200 || data.statusCode === 404)) {
+      setShop(data.payload.shop);
+      setVisitor(data.payload.visitor);
+      setMessages(data.payload.messages);
       setIsFetching(false);
-    } else {
-      fetchConversation();
     }
-  }, [fetchConversation]);
-
-  useEffect(() => {
-    const newChatMessages = {...chatMessages};
-    newChatMessages[`${id}`] = messages;
-    setChatMessages(newChatMessages);
-  }, [messages]);
+  }, [id, jwt, data]);
 
   const handleConnect = () => {
     socket.emit('join', { visitorId: visitor._id, domain: domain });
@@ -114,7 +92,7 @@ export async function getServerSideProps(context) {
 
 ChatConversation.getLayout = function(page) {
   return (
-    <ChatLayout jwt={page.props.jwt} domain={page.props.domain}>
+    <ChatLayout jwt={page.props.jwt}>
       {page}
     </ChatLayout>
   )

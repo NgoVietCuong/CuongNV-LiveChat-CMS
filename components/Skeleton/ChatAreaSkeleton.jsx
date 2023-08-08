@@ -42,10 +42,9 @@ export default function ChatAreaSkeleton() {
           </Stack>
         </Box> 
 
-        <Box p={2.5} h='118.63px' minH='118.63px' w='100%' bg='whiteAlpha.900' borderRadius='xl'>
-          <Stack px={4} py={1} spacing={3}>
+        <Box p={2.5} h='99px' minH='99px' w='100%' bg='whiteAlpha.900' borderRadius='xl'>
+          <Stack px={4} py={1} spacing={5}>
             <Skeleton w='100%' h='30px' startColor='gray.200' endColor='gray.300' />
-            <Skeleton w='45%' h='18px' startColor='gray.200' endColor='gray.300' />
             <Skeleton w='45%' h='18px' startColor='gray.200' endColor='gray.300' />
           </Stack>
         </Box>
