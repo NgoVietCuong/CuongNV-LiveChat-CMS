@@ -35,7 +35,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
       const formData = new FormData()
       formData.append('file', file);
       formData.append('upload_preset', process.env.NEXT_PUBLIC_UPLOAD_PRESET);
-      formData.append('public_id_prefix', `${process.env.NEXT_PUBLIC_UPLOAD_PRESET}/${domain}/${id}`);
+      formData.append('public_id_prefix', `${process.env.NEXT_PUBLIC_UPLOAD_PRESET}/${domain}/${visitor._id}`);
       
       let action = 'raw';
       if (file.type.includes('image')) {
