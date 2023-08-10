@@ -9,7 +9,7 @@ export default function ContactListSkeleton() {
           <Grid px='6' w='100%' py='2' templateColumns='20% 20% 20% 30%' alignItems='center'>
             <GridItem>
               <Flex alignItems='center'>
-                <SkeletonCircle mr='2' size='8' />
+                <SkeletonCircle mr='2' size='33px' />
                 <Skeleton w='50%' startColor='gray.200' endColor='gray.300' height='18px' />
               </Flex>  
             </GridItem>

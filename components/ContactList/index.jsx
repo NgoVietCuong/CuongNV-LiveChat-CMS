@@ -200,7 +200,7 @@ export default function ContactList({ jwt }) {
                       <Td>
                         <Stack direction='row' alignItems='center'>
                           <Avatar size='sm' name={contact.name} bg={contact.avatar} color='white' boxSize='33px'>
-                            <AvatarBadge boxSize='12px' bg={contact.active ? 'green.500' : 'gray.300'} />
+                            <AvatarBadge borderWidth='2px' boxSize='11px' bg={contact.active ? 'green.500' : 'gray.300'} />
                           </Avatar>
                           <Heading fontSize='14px' fontWeight='500' color='#283d52'>{contact.name}</Heading>
                         </Stack>                    

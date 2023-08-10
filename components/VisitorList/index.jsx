@@ -89,8 +89,8 @@ export default function VisitorList({ jwt }) {
                   <Tr cursor='pointer'>
                     <Td>
                       <Stack direction='row' alignItems='center'>
-                        <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg={visitor.avatar} color='white'>
-                          <AvatarBadge boxSize='11px' bg='green.500' />
+                        <Avatar size='sm' name={visitor.name ? visitor.name : visitor.key.split('-')[0]} bg={visitor.avatar} color='white' boxSize='33px'>
+                          <AvatarBadge borderWidth='2px' boxSize='11px' bg='green.500' />
                         </Avatar>
                         <Heading fontSize='14px' fontWeight='500' color='#283d52'>{visitor.name}</Heading>
                       </Stack>                    

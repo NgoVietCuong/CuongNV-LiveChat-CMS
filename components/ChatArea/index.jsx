@@ -135,7 +135,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
         <Box p={4} w='100%' h='70px' bg='whiteAlpha.900' borderRadius='xl'>
           <Flex w='100%' h='100%' justifyContent='space-between' alignItems='center'>
             <Stack direction='row' spacing={3}>
-              <Avatar name={visitor.name} size='sm' bg={visitor.avatar} color='white' boxSize='38px'>
+              <Avatar name={visitor.name} size='sm' bg={visitor.avatar} color='white' boxSize='35px'>
                 <AvatarBadge boxSize='12px' bg='green.500' />
               </Avatar>
 

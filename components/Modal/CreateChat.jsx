@@ -27,10 +27,10 @@ export default function CreateChatModal({ isOpen, onClose, cancelRef, createChat
           This visitor is not in contact. Do you want to create a new chat?
         </AlertDialogBody>
         <AlertDialogFooter>
-          <Button ref={cancelRef} onClick={onClose}>
+          <Button size='sm' h='36px' color='#283d52' ref={cancelRef} onClick={onClose}>
             Cancel
           </Button>
-          <Button isLoading={isCreating} colorScheme='blue' ml={3} onClick={createChat}>
+          <Button size='sm' h='36px' isLoading={isCreating} colorScheme='blue' ml={3} onClick={createChat}>
             Create
           </Button>
         </AlertDialogFooter>

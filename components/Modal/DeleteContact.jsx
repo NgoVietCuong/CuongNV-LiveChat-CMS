@@ -29,10 +29,10 @@ export default function DeleteContactModal({ isOpen, onClose, cancelRef, deleteC
           Are you sure to delete this contact? You won't be able to undo it.
         </AlertDialogBody>
         <AlertDialogFooter>
-          <Button ref={cancelRef} onClick={onClose}>
+          <Button size='sm' h='36px' color='#283d52' ref={cancelRef} onClick={onClose}>
             Cancel
           </Button>
-          <Button isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteContact}>
+          <Button size='sm' h='36px' isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteContact}>
             Delete
           </Button>
         </AlertDialogFooter>

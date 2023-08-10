@@ -27,10 +27,10 @@ export default function DeleteChatModal({ isOpen, onClose, cancelRef, deleteChat
           Are you sure to delete this chat? You won't be able to undo it.
         </AlertDialogBody>
         <AlertDialogFooter>
-          <Button ref={cancelRef} onClick={onClose}>
+          <Button size='sm' h='36px' color='#283d52' ref={cancelRef} onClick={onClose}>
             Cancel
           </Button>
-          <Button isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteChat}>
+          <Button size='sm' h='36px' isLoading={isDeleting} colorScheme='red' ml={3} onClick={deleteChat}>
             Delete
           </Button>
         </AlertDialogFooter>

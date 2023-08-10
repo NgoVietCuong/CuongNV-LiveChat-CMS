@@ -103,7 +103,7 @@ export default function ChatUser({ chat, jwt }) {
       const chatIndex = openChats.indexOf(chat);
       newOpenChats.splice(chatIndex, 1);
       chat.status = 'Waiting';
-      chat.read = true;
+      chat.read = false;
       setOpenChats(newOpenChats);
       setWaitingChats([chat, ...newWaitingChats]);
 
@@ -267,7 +267,6 @@ export default function ChatUser({ chat, jwt }) {
     onOpen();
   }, []);
 
-
   return (
     <>
       <Link href='/chats/[id]' as={`/chats/${id}`} passHref>
@@ -283,8 +282,8 @@ export default function ChatUser({ chat, jwt }) {
             gap={0}
           >
             <GridItem area='avatar'>
-              <Avatar name={name} bg={avatar} size='sm' color='white' boxSize='35px'>
-                <AvatarBadge boxSize='12px' bg={ active ? 'green.500': 'gray.300'} />
+              <Avatar name={name} bg={avatar} size='sm' color='white' boxSize='33px'>
+                <AvatarBadge borderWidth='2px' boxSize='11px' bg={ active ? 'green.500': 'gray.300'} />
               </Avatar>
             </GridItem>
             <GridItem area='name' alignSelf="end">
@@ -309,10 +308,10 @@ export default function ChatUser({ chat, jwt }) {
             </GridItem>
             <GridItem area='message' mt='8px' alignSelf='center'>
               <Flex justifyContent='space-between' alignItems='flex-end'>
-                {(type === 'Text') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>{(text.length > 31) ? text.substring(0, 29) + '...' : text}</Text>}
-                {(type === 'Media') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>Media</Text> }
-                {(type === 'File') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>File</Text> }
-                {(type === 'Link') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? 'gray.700' : 'gray.500'} fontWeight={read ? '400' : '500'}>{(extractURLFromString(text).length > 31) ? extractURLFromString(text).substring(0, 29) + '...' : extractURLFromString(text)}</Text> }
+                {(type === 'Text') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? '#283d52' : 'gray.500'} fontWeight={(sender === 'Visitor' && !read) ? '500' : '400'}>{(text.length > 31) ? text.substring(0, 29) + '...' : text}</Text>}
+                {(type === 'Media') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? '#283d52' : 'gray.500'} fontWeight={(sender === 'Visitor' && !read) ? '500' : '400'}>Media</Text> }
+                {(type === 'File') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? '#283d52' : 'gray.500'} fontWeight={(sender === 'Visitor' && !read) ? '500' : '400'}>File</Text> }
+                {(type === 'Link') && <Text fontSize='13px' color={(sender === 'Visitor' && !read) ? '#283d52' : 'gray.500'} fontWeight={(sender === 'Visitor' && !read) ? '500' : '400'}>{(extractURLFromString(text).length > 31) ? extractURLFromString(text).substring(0, 29) + '...' : extractURLFromString(text)}</Text> }
                 {(sender === 'Visitor' && !read) && <Icon me='5px' boxSize='14px' color='blue.300' as={FontAwesomeIcon} icon={faDownload} alignSelf='center' />} 
                 {(sender === 'Visitor' && read) && <Icon me='5px' boxSize='14px' color='gray.300' as={FontAwesomeIcon} icon={faDownload} alignSelf='center' />}
                 {(sender === 'Operator') && <Icon me='5px' boxSize='14px' color='gray.300' as={FontAwesomeIcon} icon={faReply} alignSelf='center' />}
