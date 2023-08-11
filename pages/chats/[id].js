@@ -1,10 +1,11 @@
 import useSWR from 'swr';
 import React, { useEffect, useState  } from 'react';
-import socket from '@/utils/socketIO';
+import io from 'socket.io-client';
 import fetchData from '@/utils/swr';
 import ChatLayout from '@/components/Layout/ChatLayout';
 import ChatArea from '@/components/ChatArea';
 import ChatAreaSkeleton from '@/components/Skeleton/ChatAreaSkeleton';
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/frontend`, { autoConnect: false });
 
 export default function ChatConversation({ jwt, domain, id }) {
   const [shop, setShop] = useState(null);
@@ -65,12 +66,12 @@ export default function ChatConversation({ jwt, domain, id }) {
       socket.off('join');
       socket.disconnect();
     };
-  }, [id, visitor]);
+  }, [id, visitor, socket]);
 
   return (
     <>
       {isFetching && <ChatAreaSkeleton />}
-      {!isFetching && <ChatArea key={id} id={id} domain={domain} messages={messages} onSendMessage={sendMessage} visitor={visitor} shop={shop} />}
+      {!isFetching && <ChatArea key={id} id={id} domain={domain} messages={messages} onSendMessage={sendMessage} shop={shop} visitor={visitor} setVisitor={setVisitor} />}
     </>
   )
 }

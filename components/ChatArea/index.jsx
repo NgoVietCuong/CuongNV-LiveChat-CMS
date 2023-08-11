@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarBadge, Box, Button, Flex, Heading, Icon, IconButton, Input, Stack, Spinner, Text, Textarea  } from "@chakra-ui/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+import { useAppContext } from "@/context/AppContext";
 import TextMessage from "../Message/TextMessage";
 import MediaMessage from "../Message/MediaMessage";
 import FileMessage from "../Message/FileMessage";
@@ -13,16 +14,28 @@ import ImagePreview from "../UploadPreview/ImagePreview";
 import FilePreview from "../UploadPreview/FilePreview";
 import MediaPreview from "../UploadPreview/MediaPreview";
 
-export default function ChatArea({ id, domain, messages, onSendMessage, visitor, shop }) {
+export default function ChatArea({ id, domain, messages, onSendMessage, shop, visitor, setVisitor }) {
   const [inputValue, setInputValue] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const { onlineVistors } = useAppContext();
 
   useEffect(() => {
     const messagesContainer = document.querySelector('#nvc_messages_container');
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }, []);
+
+  useEffect(() => {
+    const searchVisitor = onlineVistors.find(online => online._id === visitor._id);
+    if (searchVisitor) {
+      setVisitor(searchVisitor);
+    } else {
+      const newVisitor = {...visitor};
+      newVisitor.active = false;
+      setVisitor(newVisitor);
+    }
+  }, [onlineVistors]);
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -136,7 +149,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, visitor,
           <Flex w='100%' h='100%' justifyContent='space-between' alignItems='center'>
             <Stack direction='row' spacing={3}>
               <Avatar name={visitor.name} size='sm' bg={visitor.avatar} color='white' boxSize='35px'>
-                <AvatarBadge boxSize='12px' bg='green.500' />
+                <AvatarBadge boxSize='12px' bg={ visitor.active ? 'green.500': 'gray.300' } />
               </Avatar>
 
               <Stack spacing={1}>

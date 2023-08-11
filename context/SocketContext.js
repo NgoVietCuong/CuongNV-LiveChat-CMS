@@ -1,6 +1,7 @@
-import React, { createContext, useContext } from "react";
-import socket from "@/utils/socketIO";
+import React, { createContext, useContext } from 'react';
+import io from 'socket.io-client';
 
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/frontend`, { autoConnect: false });
 const SocketContext = createContext(socket);
 
 export function useSocketContext() {

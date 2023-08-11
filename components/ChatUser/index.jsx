@@ -161,10 +161,6 @@ export default function ChatUser({ chat, jwt }) {
           height: '80px',
         },
       });
-
-      if (isSelected(id)) {
-        router.push('/chats');
-      }
     }
   }, [waitingChats, openChats, closedChats]);
 

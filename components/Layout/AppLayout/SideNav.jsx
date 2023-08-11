@@ -37,17 +37,69 @@ export default function SideNav() {
 
   const handleOnlineVisistor = useCallback((data) => {
     setOnlineVisitors([...onlineVistors, data]);
-  }, [onlineVistors]);
+    if (data.chat) {
+      const newOpenChats = [...openChats];
+      const newWaitingChats = [...waitingChats];
+      const newClosedChats = [...closedChats];
+
+      const openChat = newOpenChats.find(chat => chat._id === data.chat._id);
+      const waitingChat = newWaitingChats.find(chat => chat._id === data.chat._id);
+      const closedChat = newClosedChats.find(chat => chat._id === data.chat._id);
+
+      if (openChat) {
+        const chatIndex = newOpenChats.indexOf(openChat);
+        newOpenChats[chatIndex].visitor.active = true;
+        setOpenChats(newOpenChats);
+      }
+
+      if (waitingChat) {
+        const chatIndex = newWaitingChats.indexOf(waitingChat);
+        newWaitingChats[chatIndex].visitor.active = true;
+        setWaitingChats(newWaitingChats);
+      }
+
+      if (closedChat) {
+        const chatIndex = newClosedChats.indexOf(closedChat);
+        newClosedChats[chatIndex].visitor.active = true;
+        setClosedChats(newClosedChats);
+      }
+    }
+  }, [onlineVistors, waitingChats, openChats, closedChats]);
 
   const handleOfflineVisitor = useCallback((data) => {
     const newOnlineVisitors = [...onlineVistors];
+    const newOpenChats = [...openChats];
+    const newWaitingChats = [...waitingChats];
+    const newClosedChats = [...closedChats];
+
     const visitor = newOnlineVisitors.find(visitor => visitor._id === data);
     if (visitor) {
       const index = newOnlineVisitors.indexOf(visitor);
       newOnlineVisitors.splice(index, 1);
       setOnlineVisitors(newOnlineVisitors);
     }
-  }, [onlineVistors]);
+
+    const openChat = newOpenChats.find(chat => chat.visitor._id === data);
+    const waitingChat = newWaitingChats.find(chat => chat.visitor._id === data);
+    const closedChat = newClosedChats.find(chat => chat.visitor._id === data);
+    if (openChat) {
+      const chatIndex = newOpenChats.indexOf(openChat);
+      newOpenChats[chatIndex].visitor.active = false;
+      setOpenChats(newOpenChats);
+    }
+
+    if (waitingChat) {
+      const chatIndex = newWaitingChats.indexOf(waitingChat);
+      newWaitingChats[chatIndex].visitor.active = false;
+      setWaitingChats(newWaitingChats);
+    }
+
+    if (closedChat) {
+      const chatIndex = newClosedChats.indexOf(closedChat);
+      newClosedChats[chatIndex].visitor.active = false;
+      setClosedChats(newClosedChats);
+    }
+  }, [onlineVistors, waitingChats, openChats, closedChats]);
 
   const handleUpdateVisitor = useCallback((data) => {
     const newOnlineVisitors = [...onlineVistors];
@@ -57,9 +109,9 @@ export default function SideNav() {
     setOnlineVisitors(newOnlineVisitors);
   }, [onlineVistors]);
 
-  const updateChatList = useCallback((data) => {
+  const handleUpdateChatList = useCallback((data) => {
     if (data.status === 'Waiting') {
-      let newWaitingChats = [...waitingChats];
+      const newWaitingChats = [...waitingChats];
       const chatId = data._id;
       const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
       if (waitingChat) {
@@ -78,7 +130,7 @@ export default function SideNav() {
         setClosedChats(newClosedChats);
       }
     } else if (data.status === 'Open') {
-      let newOpenChats = [...openChats];
+      const newOpenChats = [...openChats];
       const chatId = data._id;
       const openChat = newOpenChats.find(chat => chat._id === chatId);
       if (openChat) {
@@ -100,18 +152,18 @@ export default function SideNav() {
   }, [waitingChats, openChats, closedChats]);
 
   useEffect(() => {
-    socket.on('updateChatList', updateChatList);
+    socket.on('updateChatList', handleUpdateChatList);
     socket.on('onlineVisitor', handleOnlineVisistor);
     socket.on('offlineVisitor', handleOfflineVisitor);
     socket.on('updateVisitor', handleUpdateVisitor);
 
     return () => {
-      socket.off('updateChatList', updateChatList);
+      socket.off('updateChatList', handleUpdateChatList);
       socket.off('onlineVisitor', handleOnlineVisistor);
       socket.off('offlineVisitor', handleOfflineVisitor);
       socket.off('updateVisitor', handleUpdateVisitor);
     }
-  }, [updateChatList, handleOnlineVisistor, handleOfflineVisitor]);
+  }, [handleUpdateChatList, handleOnlineVisistor, handleOfflineVisitor, handleUpdateVisitor]);
 
   const isSelected = (path) => {
     const isRoot = path === '/';

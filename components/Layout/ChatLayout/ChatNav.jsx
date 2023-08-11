@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useState, useCallback, useEffect } from "react";
 import { Box, Heading, Icon, Input, InputGroup, InputLeftElement, Stack, Text, Tabs, TabList, TabPanels, Tab, TabPanel} from "@chakra-ui/react";
 import ChatUser from "../../ChatUser";
@@ -23,6 +24,8 @@ const notification = {
 }
 
 export default function ChatNav({ jwt }) {
+  const router = useRouter();
+  const [tabIndex, setTabIndex] = useState(0);
   const [queryValue, setQueryValue] = useState('');
   const { waitingChats, openChats, closedChats } = useAppContext();
   const [displayWaitingChats, setDisplayWaitingChats] = useState(waitingChats)
@@ -47,12 +50,28 @@ export default function ChatNav({ jwt }) {
     }
   }, [displayWaitingChats, displayOpenChats, displayClosedChats]);
 
-
   useEffect(() => {
     setDisplayWaitingChats(waitingChats);
     setDisplayOpenChats(openChats);
     setDisplayClosedChats(closedChats);
-  }, [waitingChats, openChats, closedChats])
+  }, [waitingChats, openChats, closedChats]);
+
+  useEffect(() => {
+    if (router.pathname === '/chats/[id]') {
+      const id = router.query.id;
+      const openChat = openChats.find(chat => chat._id === id);
+      const waitingChat = waitingChats.find(chat => chat._id === id);
+      const closedChat = closedChats.find(chat => chat._id === id);
+
+      if (openChat) {
+        setTabIndex(0);
+      } else if (waitingChat) {
+        setTabIndex(1);
+      } else if (closedChat) {
+        setTabIndex(2);
+      } 
+    }
+  }, []);
 
   return (
     <Box w='300px' h='100vh' bg='whiteAlpha.900' boxShadow='0 2px 6px rgba(61,65,67,.2)' zIndex='4'>
@@ -66,7 +85,7 @@ export default function ChatNav({ jwt }) {
           <Text mt={2} fontSize='sm' color='gray.500'>Live chats</Text>  
         </Stack>
 
-        <Tabs px={3} variant='enclosed'>
+        <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} px={3} variant='enclosed'>
           <TabList  justifyContent='space-between'>
             <Tab fontSize='15px' w='38%' position='relative'>Open{openChats.filter(chat => chat.read === false).length > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length}</Text>}</Tab>
             <Tab fontSize='15px' w='48%' position='relative'>Waiting{waitingChats.length > 0 && <Text bg='red.500' sx={notification}>{waitingChats.length}</Text>}</Tab>
