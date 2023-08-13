@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { Avatar, AvatarBadge, Box, Heading, Menu, MenuButton, MenuList, MenuItem, Text, Icon, IconButton , Flex, Divider, Grid, GridItem, useToast  } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical, faDownload, faReply } from '@fortawesome/free-solid-svg-icons';
-import { AccessAlarms, Delete, EventAvailable } from '@mui/icons-material';
+import { AccessAlarms, Delete, EventAvailable, MarkChatUnread } from '@mui/icons-material';
 import { useAppContext } from '@/context/AppContext';
+import { useSocketContext } from '@/context/SocketContext';
 import timeConverter from '@/utils/timeConveter';
 import extractURLFromString from '@/utils/extractUrl';
 import { useDisclosure } from '@chakra-ui/react';
@@ -50,7 +51,8 @@ export default function ChatUser({ chat, jwt }) {
   const toast = useToast();
   const router = useRouter();
   const cancelRef = React.useRef();
-  const { _id: id, read, status, updated_at, visitor: { name, email, active, avatar }, lastMessage: { sender, text, type } } = chat;
+  const { _id: id, read, status, updated_at, visitor: { name, email, active, avatar }, last_message: { sender, text, type } } = chat;
+  const socket = useSocketContext();
   const { waitingChats, setWaitingChats, openChats, setOpenChats, closedChats, setClosedChats } = useAppContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,6 +86,32 @@ export default function ChatUser({ chat, jwt }) {
     setIsMenuOpen(!isMenuOpen);
   }, [isMenuOpen]);
 
+  const handleUnreadChat = useCallback(async (e) => {
+    e.preventDefault();
+    const chatRes = await axios({
+      method: 'put',
+      url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`
+      },
+      data: JSON.stringify({ read: false })
+    });
+
+    const chatData = chatRes.data;
+    if (chatData && chatData.statusCode === 200) {
+      toast({
+        title: 'Marked as Unread',
+        status: 'info',
+        duration: 1500,
+        isClosable: true,
+        containerStyle: {
+          height: '80px',
+        },
+      });
+    }
+  }, []);
+
   const handleWaitingChat = useCallback(async (e) => {
     e.preventDefault();
     const chatRes = await axios({
@@ -98,34 +126,15 @@ export default function ChatUser({ chat, jwt }) {
     
     const chatData = chatRes.data;
     if (chatData && chatData.statusCode === 200) {
-      const newOpenChats = [...openChats];
-      const newWaitingChats = [...waitingChats];
-      const chatIndex = openChats.indexOf(chat);
-      newOpenChats.splice(chatIndex, 1);
-      chat.status = 'Waiting';
-      chat.read = false;
-      setOpenChats(newOpenChats);
-      setWaitingChats([chat, ...newWaitingChats]);
-
-      toast({
-        title: 'Moved to Waiting',
-        status: 'info',
-        duration: 1500,
-        isClosable: true,
-        containerStyle: {
-          height: '80px',
-        },
-      });
-
       if (isSelected(id)) {
         router.push('/chats');
       }
     }
-  }, [openChats, waitingChats]);
+  }, []);
 
   const handleOpenChat = useCallback(async (e) => {
     e.preventDefault();
-    const chatRes = await axios({
+    await axios({
       method: 'put',
       url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
       headers: {
@@ -134,35 +143,7 @@ export default function ChatUser({ chat, jwt }) {
       },
       data: JSON.stringify({ status: 'Open' })
     });
-
-    const chatData = chatRes.data;
-    if (chatData && chatData.statusCode === 200) {
-      const newOpenChats = [...openChats];
-      const newWaitingChats = [...waitingChats];
-      const newClosedChats = [...closedChats];
-      if (status === 'Waiting') {
-        const chatIndex = newWaitingChats.indexOf(chat);
-        newWaitingChats.splice(chatIndex, 1);
-        setWaitingChats(newWaitingChats);
-      } else if (status === 'Closed') {
-        const chatIndex = newClosedChats.indexOf(chat);
-        newClosedChats.splice(chatIndex, 1);
-        setClosedChats(newClosedChats);
-      }
-      chat.status = 'Open';
-      setOpenChats([chat, ...newOpenChats]);
-
-      toast({
-        title: 'Moved to Open',
-        status: 'info',
-        duration: 1500,
-        isClosable: true,
-        containerStyle: {
-          height: '80px',
-        },
-      });
-    }
-  }, [waitingChats, openChats, closedChats]);
+  }, []);
 
   const handleCloseChat = useCallback(async (e) => {
     e.preventDefault();
@@ -178,37 +159,11 @@ export default function ChatUser({ chat, jwt }) {
 
     const chatData = chatRes.data;
     if (chatData && chatData.statusCode === 200) {
-      const newOpenChats = [...openChats];
-      const newWaitingChats = [...waitingChats];
-      const newClosedChats = [...closedChats];
-      if (status === 'Open') {
-        const chatIndex = newOpenChats.indexOf(chat);
-        newOpenChats.splice(chatIndex, 1);
-        setOpenChats(newOpenChats);
-      } else if (status === 'Waiting') {
-        const chatIndex = newWaitingChats.indexOf(chat);
-        newWaitingChats.splice(chatIndex, 1);
-        setWaitingChats(newWaitingChats);
-      }
-      chat.status = 'Closed';
-      chat.read = true;
-      setClosedChats([chat, ...newClosedChats]);
-
-      toast({
-        title: 'Moved to Closed',
-        status: 'info',
-        duration: 1500,
-        isClosable: true,
-        containerStyle: {
-          height: '80px',
-        },
-      });
-
       if (isSelected(id)) {
         router.push('/chats');
       }
     }
-  }, [waitingChats, openChats, closedChats]);
+  }, []);
 
   const handleDeleteChat = useCallback(async (e) => {
     e.preventDefault();
@@ -295,6 +250,7 @@ export default function ChatUser({ chat, jwt }) {
                   <IconButton minW={0} bg='transparent' boxSize='21px' borderRadius={3} icon={<Icon boxSize='15px' color='gray.500' as={FontAwesomeIcon} icon={faEllipsisVertical} />} />
                 </MenuButton>
                 <MenuList w='100px'>
+                  {(status !== 'Closed' ) && (<MenuItem fontSize='15px' borderRadius={3} onClick={handleUnreadChat}><Icon as={MarkChatUnread} mr='10px' color='gray.400' boxSize='22px' />Mark as unread</MenuItem>)}
                   {(status === 'Open') && (<MenuItem fontSize='15px' borderRadius={3} onClick={handleWaitingChat}><Icon as={AccessAlarms} mr='10px' color='gray.400' boxSize='22px' />Mark as waiting</MenuItem>)}
                   {(status !== 'Open') && (<MenuItem fontSize='15px' borderRadius={3} onClick={handleOpenChat}><Icon as={AccessAlarms} mr='10px' color='gray.400' boxSize='22px' />Mark as open</MenuItem>)}
                   {(status !== 'Closed' ) && (<MenuItem fontSize='15px' borderRadius={3} onClick={handleCloseChat}><Icon as={EventAvailable} mr='10px' color='gray.400' boxSize='22px' />Mark as closed</MenuItem>)}

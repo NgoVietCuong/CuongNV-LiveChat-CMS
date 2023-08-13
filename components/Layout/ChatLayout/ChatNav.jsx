@@ -87,8 +87,8 @@ export default function ChatNav({ jwt }) {
 
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} px={3} variant='enclosed'>
           <TabList  justifyContent='space-between'>
-            <Tab fontSize='15px' w='38%' position='relative'>Open{openChats.filter(chat => chat.read === false).length > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length}</Text>}</Tab>
-            <Tab fontSize='15px' w='48%' position='relative'>Waiting{waitingChats.length > 0 && <Text bg='red.500' sx={notification}>{waitingChats.length}</Text>}</Tab>
+            <Tab fontSize='15px' w='38%' position='relative'>Open{openChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}</Tab>
+            <Tab fontSize='15px' w='48%' position='relative'>Waiting{waitingChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length > 0 && <Text bg='red.500' sx={notification}>{waitingChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}</Tab>
             <Tab fontSize='15px' w='43%' position='relative'>Closed</Tab>
           </TabList>
 

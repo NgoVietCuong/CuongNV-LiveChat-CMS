@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
-import { Avatar, AvatarBadge, Box, Icon, Link, List, ListItem, Stack, Tooltip, Text } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Icon, Link, List, ListItem, Stack, Tooltip, Text, useToast } from '@chakra-ui/react';
 import { MoveToInbox, PermContactCalendar, People, Analytics } from '@mui/icons-material';
 import { useAppContext } from '@/context/AppContext';
 import { useSocketContext } from '@/context/SocketContext';
@@ -31,9 +31,46 @@ const notification = {
 }
 
 export default function SideNav() {
+  const toast = useToast();
   const router = useRouter();
   const { shopName, waitingChats, setWaitingChats, openChats, setOpenChats, closedChats, setClosedChats, onlineVistors, setOnlineVisitors } = useAppContext();
   const socket = useSocketContext();
+
+  const moveToOpenToast = useCallback(() => {
+    toast({
+      title: 'Moved to Open',
+      status: 'info',
+      duration: 1500,
+      isClosable: true,
+      containerStyle: {
+        height: '80px',
+      },
+    });
+  }, []);
+
+  const moveToWaitingToast = useCallback(() => {
+    toast({
+      title: 'Moved to Waiting',
+      status: 'info',
+      duration: 1500,
+      isClosable: true,
+      containerStyle: {
+        height: '80px',
+      },
+    });
+  }, []);
+
+  const moveToClosedToast = useCallback(() => {
+    toast({
+      title: 'Moved to Closed',
+      status: 'info',
+      duration: 1500,
+      isClosable: true,
+      containerStyle: {
+        height: '80px',
+      },
+    });
+  }, []);
 
   const handleOnlineVisistor = useCallback((data) => {
     setOnlineVisitors([...onlineVistors, data]);
@@ -110,46 +147,93 @@ export default function SideNav() {
   }, [onlineVistors]);
 
   const handleUpdateChatList = useCallback((data) => {
+    const newOpenChats = [...openChats];
+    const newWaitingChats = [...waitingChats];
+    const newClosedChats = [...closedChats];
+    const chatId = data._id;
+    const openChat = newOpenChats.find(chat => chat._id === chatId);
+    const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
+    const closedChat = newClosedChats.find(chat => chat._id === chatId);
     if (data.status === 'Waiting') {
-      const newWaitingChats = [...waitingChats];
-      const chatId = data._id;
-      const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
       if (waitingChat) {
+        data.visitor = waitingChat.visitor;
         const chatIndex = newWaitingChats.indexOf(waitingChat);
         newWaitingChats.splice(chatIndex, 1);
         setWaitingChats([data, ...newWaitingChats]);
-      } else {
+      } else if (openChat) {
+        data.visitor = openChat.visitor;
         setWaitingChats([data, ...newWaitingChats]);
-      }
-
-      const newClosedChats = [...closedChats];
-      const closedChat = newClosedChats.find(chat => chat._id === chatId);
-      if (closedChat) {
+        const chatIndex = newOpenChats.indexOf(openChat);
+        newOpenChats.splice(chatIndex, 1);
+        setOpenChats(newOpenChats);
+        moveToWaitingToast();
+      } else if (closedChat) {
+        data.visitor = closedChat.visitor;
+        setWaitingChats([data, ...newWaitingChats]);
         const chatIndex = newClosedChats.indexOf(closedChat);
         newClosedChats.splice(chatIndex, 1);
         setClosedChats(newClosedChats);
+        moveToWaitingToast();
+      } else {
+        const visitor = onlineVistors.find(online => online._id === data.visitor);
+        data.visitor = {
+          _id: visitor._id,
+          name: visitor.name,
+          email: visitor.email,
+          avatar: visitor.avatar,
+          active: true
+        }
+        setWaitingChats([data, ...newWaitingChats]);
       }
     } else if (data.status === 'Open') {
-      const newOpenChats = [...openChats];
-      const chatId = data._id;
-      const openChat = newOpenChats.find(chat => chat._id === chatId);
       if (openChat) {
+        data.visitor = openChat.visitor;
         const chatIndex = newOpenChats.indexOf(openChat);
         newOpenChats.splice(chatIndex, 1);
         setOpenChats([data, ...newOpenChats]);
-      } else {
+      } else if (waitingChat) {
+        data.visitor = waitingChat.visitor;
         setOpenChats([data, ...newOpenChats]);
-      }
-
-      const newWaitingChats = [...waitingChats];
-      const waitingChat = newWaitingChats.find(chat => chat._id === chatId);
-      if (waitingChat) {
         const chatIndex = newWaitingChats.indexOf(waitingChat);
         newWaitingChats.splice(chatIndex, 1);
-        setWaitingChats(newWaitingChats); 
+        setWaitingChats(newWaitingChats);
+        moveToOpenToast();
+      } else if (closedChat) {
+        data.visitor = closedChat.visitor;
+        setOpenChats([data, ...newOpenChats]);
+        const chatIndex = newClosedChats.indexOf(closedChat);
+        newClosedChats.splice(chatIndex, 1);
+        setClosedChats(newClosedChats);
+        moveToOpenToast();
+      } else {
+        const visitor = onlineVistors.find(online => online._id === data.visitor);
+        data.visitor = {
+          _id: visitor._id,
+          name: visitor.name,
+          email: visitor.email,
+          avatar: visitor.avatar,
+          active: true
+        }
+        setOpenChats([data, ...newOpenChats]);
+      }
+    } else {
+      if (openChat) {
+        data.visitor = openChat.visitor;
+        setClosedChats([data, ...newClosedChats]);
+        const chatIndex = newOpenChats.indexOf(openChat);
+        newOpenChats.splice(chatIndex, 1);
+        setOpenChats(newOpenChats);
+        moveToClosedToast();
+      } else if (waitingChat) {
+        data.visitor = waitingChat.visitor;
+        setClosedChats([data, ...newClosedChats]);
+        const chatIndex = newWaitingChats.indexOf(waitingChat);
+        newWaitingChats.splice(chatIndex, 1);
+        setWaitingChats(newWaitingChats);
+        moveToClosedToast();
       }
     }
-  }, [waitingChats, openChats, closedChats]);
+  }, [waitingChats, openChats, closedChats, onlineVistors]);
 
   useEffect(() => {
     socket.on('updateChatList', handleUpdateChatList);
@@ -192,7 +276,7 @@ export default function SideNav() {
                 <Link w='60px' h='60px' display='block' textAlign='center' href='/chats' as={NextLink} sx={navigationStyle}>
                   <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'>
                     <Icon boxSize='26px' as={MoveToInbox} color={isSelected('/chats') ? 'blue.500' : 'gray.500'} />
-                    {(openChats.filter(chat => chat.read === false).length + waitingChats.length) > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length + waitingChats.length}</Text>}
+                    {(openChats.concat(waitingChats).filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length) > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length + waitingChats.length}</Text>}
                   </Stack>
                 </Link>
               </Tooltip>

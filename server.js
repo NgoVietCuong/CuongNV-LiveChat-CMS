@@ -80,8 +80,9 @@ app.prepare().then(() => {
                         }
                     });
                     const shopData = shopRes.data;
-                    
                     if (shopData && shopData.statusCode === 200) {
+                        const shopId = shopData.payload._id;
+                        ctx.cookies.set('shopId', shopId, { httpOnly: false, secure: true, sameSite: 'none' });
                         const updateRes = await axios({
                             url: `${SERVER_URL}/shops`,
                             method: 'put', 
@@ -115,6 +116,8 @@ app.prepare().then(() => {
                         const createData = createRes.data;
                         
                         if (createData && createData.statusCode === 201) {
+                            const shopId = createData.payload._id;
+                            ctx.cookies.set('shopId', shopId, { httpOnly: false, secure: true, sameSite: 'none' });
                             shopAuthentication = true;
                             await axios({
                                 url: `${SERVER_URL}/script-tags`,

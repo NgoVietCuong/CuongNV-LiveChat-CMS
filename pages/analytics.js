@@ -111,11 +111,13 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const jwt = req.cookies.nvcJWT;
   const domain = req.cookies['shop'];
+  const shopId = req.cookies['shopId'];
 
   return {
     props: {
       jwt,
-      domain
+      domain,
+      shopId
     }
   }
 }

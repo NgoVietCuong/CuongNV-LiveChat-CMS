@@ -16,13 +16,14 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   const isIndexPage = router.pathname === '/';
   const domain = pageProps.domain;
+  const shopId = pageProps.shopId;
   const socket = useSocketContext();
 
   useEffect(() => {
     if (!socket.connected) {
       socket.connect();
       socket.on('connect', () => {
-        socket.emit('join', { domain: domain });
+        socket.emit('join', { domain: domain, shopId: shopId });
       });
     }
 

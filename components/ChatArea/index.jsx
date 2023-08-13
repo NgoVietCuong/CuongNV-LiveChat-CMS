@@ -62,7 +62,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, shop, vi
           url: `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/${action}/upload`,
           method: 'post',
           data: formData
-        })
+        });
         return response.data;
       } catch (e) {
         console.log('error promise', e);
@@ -116,9 +116,9 @@ export default function ChatArea({ id, domain, messages, onSendMessage, shop, vi
     if (selectedFiles && selectedFiles.length) {
       selectedFiles.forEach((file) => {
         if (['image', 'video'].includes(file.resource_type)) {
-          data.push({ sender: 'Operator', type: 'Media', url: file.url, filename: file.original_filename, chat: id, shop: shop, visitor: visitor._id });
+          data.push({ sender: 'Operator', type: 'Media', url: file.secure_url, filename: file.original_filename, chat: id, shop: shop, visitor: visitor._id });
         } else {
-          data.push({ sender: 'Operator', type: 'File', url: file.url, filename: file.original_filename, chat: id, shop: shop, visitor: visitor._id });
+          data.push({ sender: 'Operator', type: 'File', url: file.secure_url, filename: file.original_filename, chat: id, shop: shop, visitor: visitor._id });
         }
       });
       setSelectedFiles([]);
@@ -187,7 +187,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, shop, vi
         </Box>
 
         <Box p={2.5} w='100%' bg='whiteAlpha.900' borderRadius='xl'>
-          <Stack w='100%' px={4} spacing={3} justifyContent='space-between'>
+          <Stack w='100%' px={4} spacing={0} justifyContent='space-between'>
             <Stack w='100%'>
               <Textarea 
                 id='nvc_messaage_textarea'
@@ -214,7 +214,7 @@ export default function ChatArea({ id, domain, messages, onSendMessage, shop, vi
               </Flex>
             </Stack>
             <Flex px={'15px'} alignItems='center' justifyContent='flex-start' mt='0px!important'>
-              <IconButton size='sm' mr='10px' variant='unstyled' borderRadius='md' icon={<Icon as={FontAwesomeIcon} icon={faPaperclip} color='black'/>} isDisabled={isLoading} sx={{'&:hover': {bg: 'blue.300'}}} onClick={handleButtonClick} />
+              <IconButton size='sm' mr='10px' variant='unstyled' borderRadius='md' icon={<Icon as={FontAwesomeIcon} icon={faPaperclip} />} isDisabled={isLoading} sx={{'&:hover': {color: 'blue.500', bg: 'blue.50'}}} onClick={handleButtonClick} />
               <Input type='file' multiple ref={fileInputRef} display='none' onChange={handleFileChange} />
               <Button size='sm' borderRadius='md' colorScheme='blue' onClick={handleSendMessage}>Send</Button>
             </Flex>
