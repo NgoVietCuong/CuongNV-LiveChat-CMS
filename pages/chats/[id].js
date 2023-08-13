@@ -25,7 +25,6 @@ export default function ChatConversation({ jwt, domain, shopId, id }) {
   useEffect(() => {
     setIsFetching(true);
     if (data && (data.statusCode === 200 || data.statusCode === 404)) {
-      console.log('ok', data.payload.messages)
       setShop(data.payload.shop);
       setVisitor(data.payload.visitor);
       setMessages(data.payload.messages);

@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical, faDownload, faReply } from '@fortawesome/free-solid-svg-icons';
 import { AccessAlarms, Delete, EventAvailable, MarkChatUnread } from '@mui/icons-material';
 import { useAppContext } from '@/context/AppContext';
-import { useSocketContext } from '@/context/SocketContext';
 import timeConverter from '@/utils/timeConveter';
 import extractURLFromString from '@/utils/extractUrl';
 import { useDisclosure } from '@chakra-ui/react';
@@ -52,7 +51,6 @@ export default function ChatUser({ chat, jwt }) {
   const router = useRouter();
   const cancelRef = React.useRef();
   const { _id: id, read, status, updated_at, visitor: { name, email, active, avatar }, last_message: { sender, text, type } } = chat;
-  const socket = useSocketContext();
   const { waitingChats, setWaitingChats, openChats, setOpenChats, closedChats, setClosedChats } = useAppContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -110,10 +108,11 @@ export default function ChatUser({ chat, jwt }) {
         },
       });
     }
-  }, []);
+  }, [waitingChats, openChats, closedChats]);
 
   const handleWaitingChat = useCallback(async (e) => {
     e.preventDefault();
+    console.log('waiting', id)
     const chatRes = await axios({
       method: 'put',
       url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
@@ -130,10 +129,11 @@ export default function ChatUser({ chat, jwt }) {
         router.push('/chats');
       }
     }
-  }, []);
+  }, [waitingChats, openChats, closedChats]);
 
   const handleOpenChat = useCallback(async (e) => {
     e.preventDefault();
+    console.log('open', id)
     await axios({
       method: 'put',
       url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
@@ -143,7 +143,7 @@ export default function ChatUser({ chat, jwt }) {
       },
       data: JSON.stringify({ status: 'Open' })
     });
-  }, []);
+  }, [waitingChats, openChats, closedChats]);
 
   const handleCloseChat = useCallback(async (e) => {
     e.preventDefault();
@@ -163,7 +163,7 @@ export default function ChatUser({ chat, jwt }) {
         router.push('/chats');
       }
     }
-  }, []);
+  }, [waitingChats, openChats, closedChats]);
 
   const handleDeleteChat = useCallback(async (e) => {
     e.preventDefault();
@@ -220,7 +220,7 @@ export default function ChatUser({ chat, jwt }) {
 
   return (
     <>
-      <Link href='/chats/[id]' as={`/chats/${id}`} passHref>
+      <Link key={id} href='/chats/[id]' as={`/chats/${id}`} passHref>
         <Box w='100%' key={id} cursor='pointer' sx={isSelected(id) ? combinedSelectedUserStyle : combinedNormalUserStyle } borderRadius='md'>
           <Grid
             w='100%'

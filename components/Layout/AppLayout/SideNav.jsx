@@ -147,6 +147,7 @@ export default function SideNav() {
   }, [onlineVistors]);
 
   const handleUpdateChatList = useCallback((data) => {
+    console.log('data', data)
     const newOpenChats = [...openChats];
     const newWaitingChats = [...waitingChats];
     const newClosedChats = [...closedChats];
@@ -159,7 +160,12 @@ export default function SideNav() {
         data.visitor = waitingChat.visitor;
         const chatIndex = newWaitingChats.indexOf(waitingChat);
         newWaitingChats.splice(chatIndex, 1);
-        setWaitingChats([data, ...newWaitingChats]);
+        if (data.changeOrder) {
+          setWaitingChats([data, ...newWaitingChats]);
+        } else {
+          newWaitingChats.splice(chatIndex, 0 , data);
+          setWaitingChats(newWaitingChats);
+        }
       } else if (openChat) {
         data.visitor = openChat.visitor;
         setWaitingChats([data, ...newWaitingChats]);
@@ -175,6 +181,7 @@ export default function SideNav() {
         setClosedChats(newClosedChats);
         moveToWaitingToast();
       } else {
+        console.log('newWaitingChats', newWaitingChats)
         const visitor = onlineVistors.find(online => online._id === data.visitor);
         data.visitor = {
           _id: visitor._id,
@@ -190,7 +197,12 @@ export default function SideNav() {
         data.visitor = openChat.visitor;
         const chatIndex = newOpenChats.indexOf(openChat);
         newOpenChats.splice(chatIndex, 1);
-        setOpenChats([data, ...newOpenChats]);
+        if (data.changeOrder) {
+          setOpenChats([data, ...newOpenChats]);
+        } else {
+          newOpenChats.splice(chatIndex, 0, data);
+          setOpenChats(newOpenChats);
+        }
       } else if (waitingChat) {
         data.visitor = waitingChat.visitor;
         setOpenChats([data, ...newOpenChats]);
@@ -206,6 +218,7 @@ export default function SideNav() {
         setClosedChats(newClosedChats);
         moveToOpenToast();
       } else {
+        console.log('newOpenChats', newOpenChats)
         const visitor = onlineVistors.find(online => online._id === data.visitor);
         data.visitor = {
           _id: visitor._id,

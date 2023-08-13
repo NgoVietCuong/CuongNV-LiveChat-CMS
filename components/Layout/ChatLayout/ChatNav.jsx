@@ -32,6 +32,8 @@ export default function ChatNav({ jwt }) {
   const [displayOpenChats, setDisplayOpenChats] = useState(openChats);
   const [displayClosedChats, setDisplayClosedChats] = useState(closedChats);
 
+  // console.log(displayWaitingChats)
+
   const handleSearchChat = useCallback((e) => {
     const value = e.target.value;
     setQueryValue(value);
@@ -132,6 +134,9 @@ export default function ChatNav({ jwt }) {
                   scrollbarColor: 'transparent transparent', // For Firefox
                   WebkitOverflowScrolling: 'touch',
                 }}>
+                {displayWaitingChats.length && displayWaitingChats.map(chat => {
+                  console.log('chat ne', chat)
+                })}
                 {displayWaitingChats.length && displayWaitingChats.map(chat => (
                   <>
                     <ChatUser chat={chat} jwt={jwt} />
