@@ -112,7 +112,6 @@ export default function ChatUser({ chat, jwt }) {
 
   const handleWaitingChat = useCallback(async (e) => {
     e.preventDefault();
-    console.log('waiting', id)
     const chatRes = await axios({
       method: 'put',
       url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
@@ -133,7 +132,6 @@ export default function ChatUser({ chat, jwt }) {
 
   const handleOpenChat = useCallback(async (e) => {
     e.preventDefault();
-    console.log('open', id)
     await axios({
       method: 'put',
       url:  `${process.env.NEXT_PUBLIC_SERVER_URL}/chats/${id}`,
@@ -220,7 +218,7 @@ export default function ChatUser({ chat, jwt }) {
 
   return (
     <>
-      <Link key={id} href='/chats/[id]' as={`/chats/${id}`} passHref>
+      <Link href='/chats/[id]' as={`/chats/${id}`} passHref>
         <Box w='100%' key={id} cursor='pointer' sx={isSelected(id) ? combinedSelectedUserStyle : combinedNormalUserStyle } borderRadius='md'>
           <Grid
             w='100%'

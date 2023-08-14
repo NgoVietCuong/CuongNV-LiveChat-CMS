@@ -139,15 +139,61 @@ export default function SideNav() {
   }, [onlineVistors, waitingChats, openChats, closedChats]);
 
   const handleUpdateVisitor = useCallback((data) => {
+    console.log('data', data)
     const newOnlineVisitors = [...onlineVistors];
     const visitor = newOnlineVisitors.find(visitor => visitor._id === data._id);
     const index = newOnlineVisitors.indexOf(visitor);
     newOnlineVisitors[index] = data;
     setOnlineVisitors(newOnlineVisitors);
-  }, [onlineVistors]);
+
+    if (data.chat) {
+      const newOpenChats = [...openChats];
+      const newWaitingChats = [...waitingChats];
+      const newClosedChats = [...closedChats];
+  
+      const openChat = newOpenChats.find(chat => chat._id === data.chat._id);
+      const waitingChat = newWaitingChats.find(chat => chat._id === data.chat._id);
+      const closedChat = newClosedChats.find(chat => chat._id === data.chat._id);
+  
+      if (openChat) {
+        const chatIndex = newOpenChats.indexOf(openChat);
+        newOpenChats[chatIndex].visitor = {
+          _id: data._id,
+          name: data.name,
+          email: data.email,
+          avatar: data.avatar,
+          active: true
+        }
+        setOpenChats(newOpenChats);
+      }
+  
+      if (waitingChat) {
+        const chatIndex = newWaitingChats.indexOf(waitingChat);
+        newWaitingChats[chatIndex].visitor = {
+          _id: data._id,
+          name: data.name,
+          email: data.email,
+          avatar: data.avatar,
+          active: true
+        }
+        setWaitingChats(newWaitingChats);
+      }
+  
+      if (closedChat) {
+        const chatIndex = newClosedChats.indexOf(closedChat);
+        newClosedChats[chatIndex].visitor = {
+          _id: data._id,
+          name: data.name,
+          email: data.email,
+          avatar: data.avatar,
+          active: true
+        };
+        setClosedChats(newClosedChats);
+      }
+    }
+  }, [onlineVistors, openChats, closedChats, onlineVistors]);
 
   const handleUpdateChatList = useCallback((data) => {
-    console.log('data', data)
     const newOpenChats = [...openChats];
     const newWaitingChats = [...waitingChats];
     const newClosedChats = [...closedChats];
@@ -181,7 +227,6 @@ export default function SideNav() {
         setClosedChats(newClosedChats);
         moveToWaitingToast();
       } else {
-        console.log('newWaitingChats', newWaitingChats)
         const visitor = onlineVistors.find(online => online._id === data.visitor);
         data.visitor = {
           _id: visitor._id,
@@ -218,7 +263,6 @@ export default function SideNav() {
         setClosedChats(newClosedChats);
         moveToOpenToast();
       } else {
-        console.log('newOpenChats', newOpenChats)
         const visitor = onlineVistors.find(online => online._id === data.visitor);
         data.visitor = {
           _id: visitor._id,
@@ -244,6 +288,16 @@ export default function SideNav() {
         newWaitingChats.splice(chatIndex, 1);
         setWaitingChats(newWaitingChats);
         moveToClosedToast();
+      } else if (closedChat) {
+        data.visitor = closedChat.visitor;
+        const chatIndex = newClosedChats.indexOf(closedChat);
+        newClosedChats.splice(chatIndex, 1);
+        if (data.changeOrder) {
+          setClosedChats([data, ...newClosedChats]);
+        } else {
+          newClosedChats.splice(chatIndex, 0 , data);
+          setClosedChats(newClosedChats);
+        }
       }
     }
   }, [waitingChats, openChats, closedChats, onlineVistors]);
@@ -289,7 +343,7 @@ export default function SideNav() {
                 <Link w='60px' h='60px' display='block' textAlign='center' href='/chats' as={NextLink} sx={navigationStyle}>
                   <Stack w='60px' h='60px' position='relative' alignItems='center' justifyContent='center'>
                     <Icon boxSize='26px' as={MoveToInbox} color={isSelected('/chats') ? 'blue.500' : 'gray.500'} />
-                    {(openChats.concat(waitingChats).filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length) > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => chat.read === false).length + waitingChats.length}</Text>}
+                    {(openChats.concat(waitingChats).concat(closedChats).filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length) > 0 && <Text bg='red.500' sx={notification}>{openChats.concat(waitingChats).concat(closedChats).filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}
                   </Stack>
                 </Link>
               </Tooltip>

@@ -32,8 +32,6 @@ export default function ChatNav({ jwt }) {
   const [displayOpenChats, setDisplayOpenChats] = useState(openChats);
   const [displayClosedChats, setDisplayClosedChats] = useState(closedChats);
 
-  // console.log(displayWaitingChats)
-
   const handleSearchChat = useCallback((e) => {
     const value = e.target.value;
     setQueryValue(value);
@@ -91,7 +89,7 @@ export default function ChatNav({ jwt }) {
           <TabList  justifyContent='space-between'>
             <Tab fontSize='15px' w='38%' position='relative'>Open{openChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length > 0 && <Text bg='red.500' sx={notification}>{openChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}</Tab>
             <Tab fontSize='15px' w='48%' position='relative'>Waiting{waitingChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length > 0 && <Text bg='red.500' sx={notification}>{waitingChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}</Tab>
-            <Tab fontSize='15px' w='43%' position='relative'>Closed</Tab>
+            <Tab fontSize='15px' w='43%' position='relative'>Closed{closedChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length > 0 && <Text bg='red.500' sx={notification}>{closedChats.filter(chat => (chat.read === false) && (chat.last_message.sender === 'Visitor')).length}</Text>}</Tab>
           </TabList>
 
           <TabPanels>
@@ -112,7 +110,7 @@ export default function ChatNav({ jwt }) {
                 }}>
                 {displayOpenChats.length && displayOpenChats.map(chat => (
                   <>
-                    <ChatUser chat={chat} jwt={jwt} />
+                    <ChatUser key={chat._id} chat={chat} jwt={jwt} />
                   </>
                 ))}
                 {!displayOpenChats.length && <Text py={20} px={3} fontSize='14px' fontWeight='400' color='gray.600'>You have no open conversations at the moment</Text>}     
@@ -134,12 +132,9 @@ export default function ChatNav({ jwt }) {
                   scrollbarColor: 'transparent transparent', // For Firefox
                   WebkitOverflowScrolling: 'touch',
                 }}>
-                {displayWaitingChats.length && displayWaitingChats.map(chat => {
-                  console.log('chat ne', chat)
-                })}
                 {displayWaitingChats.length && displayWaitingChats.map(chat => (
                   <>
-                    <ChatUser chat={chat} jwt={jwt} />
+                    <ChatUser key={chat._id} chat={chat} jwt={jwt} />
                   </>
                 ))}
                 {!displayWaitingChats.length && <Text py={20} px={3} fontSize='14px' fontWeight='400' color='gray.600'>You have no waiting conversations at the moment</Text>}
@@ -163,7 +158,7 @@ export default function ChatNav({ jwt }) {
                 }}>
                 {displayClosedChats.length && displayClosedChats.map(chat => (
                   <>
-                    <ChatUser chat={chat} jwt={jwt} />
+                    <ChatUser key={chat._id} chat={chat} jwt={jwt} />
                   </>
                 ))}
                 {!displayClosedChats.length && <Text py={20} px={3} fontSize='14px' fontWeight='400' color='gray.600'>You have no closed conversations at the moment</Text>}  
