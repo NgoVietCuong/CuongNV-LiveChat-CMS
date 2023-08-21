@@ -1,42 +1,82 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Shopify LiveChat App - CuongNV-LiveChat-CMS
 
-## Getting Started
+![GitHub Stars](https://img.shields.io/github/stars/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
+![GitHub Forks](https://img.shields.io/github/forks/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
+![License](https://img.shields.io/github/license/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
 
-First, run the development server:
+The Shopify LiveChat App (CuongNV-LiveChat-CMS) is a Content Management System (CMS) tailored for integrating live chat functionality into Shopify stores. This app enables store owners to engage with customers in real-time, enhancing their shopping experience and providing immediate support. The system is built with modern web technologies and is designed to seamlessly integrate into Shopify-based e-commerce websites.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Features
+
+- Shopify Integration: Seamlessly integrate the live chat system into your Shopify store.
+- Real-time Chat: Engage with customers in real-time through a user-friendly chat interface directly on your Shopify store.
+- Conversation Categorization: Organize chats to streamline customer support processes.
+- Chat History: Access chat history for analyzing customer interactions and improving service quality.
+- Online Visitor Detection: Identify and monitor online visitors, enabling proactive engagement for better customer service.
+- Notification: Receive notifications for new messages and chat requests to ensure prompt responses.
+- Analytics: View essential statistics related to chat usage and customer engagement to optimize your support strategy.
+
+## Demo
 
 https://github.com/NgoVietCuong/CuongNV-LiveChat-CMS/assets/96627324/9da456b8-72d3-4824-96b8-0118a674d374
 
+## How to install
+
+To get started with the Shopify LiveChat App, follow these steps:
+
+1. Clone the repository:
+
+  ```bash
+  git clone https://github.com/NgoVietCuong/CuongNV-LiveChat-CMS.git
+  ```
 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install the required dependencies:
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+3. Configure the environment variables:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Rename `.env.example` to `.env` and fill in the necessary environment variables.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+4. Set up the database:
 
-## Learn More
+Use the provided SQL scripts to set up the required database tables.
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the application:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+6. Access the application:
 
-## Deploy on Vercel
+Open your web browser and navigate to the specified URL (default: http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For detailed installation and configuration instructions, refer to the [Installation Guide](/docs/INSTALLATION.md).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Documentation
+
+The project documentation can be found in the `docs` directory. It includes detailed guides on installation, configuration, customization, and integration. Please refer to the documentation for more information.
+
+## Contributing
+
+Contributions are welcome! If you find any issues or would like to add new features, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your changes to your fork.
+5. Open a pull request describing your changes.
+
+Please review the [Contribution Guidelines](/CONTRIBUTING.md) for more information.
+
+## License
+
+This project is licensed under the [MIT License](/LICENSE).
+
+## Contact
+
+For any questions or inquiries, please contact [project@example.com](mailto:project@example.com).
+
+---
+
+
+
+
