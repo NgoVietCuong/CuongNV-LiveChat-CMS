@@ -1,6 +1,6 @@
 # CuongNV LiveChat App - CMS
 
-The CuongNV LiveChat App - CMS is a Content Management System (CMS) tailored for integrating live chat functionality into Shopify stores. This app enables store owners to engage with customers in real-time, enhancing their shopping experience and providing immediate support. The system is built with modern web technologies and is designed to seamlessly integrate into Shopify-based e-commerce websites.
+CuongNV LiveChat App - CMS is a Content Management System (CMS) tailored for integrating live chat functionality into Shopify stores. This app enables store owners to engage with customers in real-time, enhancing their shopping experience and providing immediate support. The system is built with modern web technologies and is designed to seamlessly integrate into Shopify-based e-commerce websites.
 
 ## Features
 
