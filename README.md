@@ -1,10 +1,6 @@
-# Shopify LiveChat App - CuongNV-LiveChat-CMS
+# CuongNV LiveChat App - CMS
 
-![GitHub Stars](https://img.shields.io/github/stars/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
-![GitHub Forks](https://img.shields.io/github/forks/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
-![License](https://img.shields.io/github/license/NgoVietCuong/CuongNV-LiveChat-CMS?style=flat-square)
-
-The Shopify LiveChat App (CuongNV-LiveChat-CMS) is a Content Management System (CMS) tailored for integrating live chat functionality into Shopify stores. This app enables store owners to engage with customers in real-time, enhancing their shopping experience and providing immediate support. The system is built with modern web technologies and is designed to seamlessly integrate into Shopify-based e-commerce websites.
+The CuongNV LiveChat App - CMS is a Content Management System (CMS) tailored for integrating live chat functionality into Shopify stores. This app enables store owners to engage with customers in real-time, enhancing their shopping experience and providing immediate support. The system is built with modern web technologies and is designed to seamlessly integrate into Shopify-based e-commerce websites.
 
 ## Features
 
@@ -22,61 +18,80 @@ https://github.com/NgoVietCuong/CuongNV-LiveChat-CMS/assets/96627324/9da456b8-72
 
 ## How to install
 
-To get started with the Shopify LiveChat App, follow these steps:
+To get started with the CuongNV LiveChat App - CMS, follow these steps:
 
-1. Clone the repository:
+1. Set up the server:
+  
+To begin, you will need a server with an nginx configuration in order to successfully install and run the application. Configure the domain and port of the application you will run in the nginx file
 
-  ```bash
-  git clone https://github.com/NgoVietCuong/CuongNV-LiveChat-CMS.git
-  ```
+```
+server {
+    listen 80;
+    server_name your_domain.com www.your_domain.com;
+
+    root /var/www/your_application;  # Path to your application's root directory
+
+    location / {
+        proxy_pass http://localhost:3000;  # Forward requests to your application's backend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
 
 
-2. Install the required dependencies:
+2. Clone the repository:
+
+```bash
+git clone https://github.com/NgoVietCuong/CuongNV-LiveChat-CMS.git
+```
 
 
-3. Configure the environment variables:
+3. Install the required dependencies:
 
-Rename `.env.example` to `.env` and fill in the necessary environment variables.
+```bash
+npm install
+```
 
-4. Set up the database:
 
-Use the provided SQL scripts to set up the required database tables.
+4. Configure the environment variables:
+
+Rename `.env.example` to `.env` and fill in the necessary environment variables down below.
+```bash
+# Shopify
+SHOPIFY_API_KEY='<your_shopify_app_client_id>'
+SHOPIFY_API_SECRET_KEY='<your_shopify_app_client_secret>'
+SHOPIFY_SCOPES='<your_shopify_app_scopes>'
+API_VERSION='<your_shopify_api_version>'
+# App
+APP_DOMAIN='<your_app_cms_domain>'
+APP_PORT='<your_app_running_port>'
+# Server
+SERVER_URL='<your_app_api_domain>'
+# JWT
+JWT_SECRET_KEY='<your_key>'
+JWT_EXPIRES_IN='<jwt_expires_in>'
+JWT_ALGORITHM='<jwt_algorithm>'
+# Public
+NEXT_PUBLIC_SERVER_URL='<your_app_cms_domain>'
+NEXT_PUBLIC_APP_URL='<your_app_api_domain>'
+# Cloudinary
+NEXT_PUBLIC_CLOUD_NAME='<your_cloudinary_cloud_name>'
+NEXT_PUBLIC_UPLOAD_PRESET='<your_cloudinary_upload_preset>'
+```
+
 
 5. Run the application:
+
+Intall PM2 in your server, build and run the application with PM2:
+```
+npm install pm2
+npm run build
+pm2 start npm --name '<your_process_name>' -- run start 
+```
 
 
 6. Access the application:
 
-Open your web browser and navigate to the specified URL (default: http://localhost:3000).
-
-For detailed installation and configuration instructions, refer to the [Installation Guide](/docs/INSTALLATION.md).
-
-## Documentation
-
-The project documentation can be found in the `docs` directory. It includes detailed guides on installation, configuration, customization, and integration. Please refer to the documentation for more information.
-
-## Contributing
-
-Contributions are welcome! If you find any issues or would like to add new features, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them.
-4. Push your changes to your fork.
-5. Open a pull request describing your changes.
-
-Please review the [Contribution Guidelines](/CONTRIBUTING.md) for more information.
-
-## License
-
-This project is licensed under the [MIT License](/LICENSE).
-
-## Contact
-
-For any questions or inquiries, please contact [project@example.com](mailto:project@example.com).
-
----
-
-
-
-
+If the app is already installed, open the app in your Shopify store. If not, install it
